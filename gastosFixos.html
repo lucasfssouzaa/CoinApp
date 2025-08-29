@@ -1,0 +1,132 @@
+<html lang="pt-br">
+<style>
+    .btnGastoFixo{
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        width: -webkit-fill-available;
+        margin: 10px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .inputDesc, .inputValor{
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+
+    .add{
+        background-color: #0fc918;
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        width: 30px;
+        margin: 10px;
+        height: 30px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 10px;
+    }
+</style>
+<body>
+<div id="voltar" style="display: block;">
+    <span class="material-symbols-outlined" onclick="voltar()">arrow_back</span>
+</div>
+<!-- Tela Inicial de Gastos Fixos -->
+<div id="buttonContainer" style="display: block;">
+    <h1>Gastos Fixos</h1>
+    <p>Gastos fixos irão aparecer automaticamente ao consultar algum registro de gastos pela primeira vez</p>
+    <div>
+        <button class="btnGastoFixo" id="btnAdicionarGastoFixo" onClick="exibeMenu('receitasContainer')">Receitas</button>
+        <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('dividasContainer')">Dívidas</button>
+        <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('contasTerceirosContainer')">Contas de Terceiros</button>
+    </div>
+</div>
+
+<!-- Tela de Receitas -->
+<div id="receitasContainer" style="display: none;">
+    <h1 style="margin: 2px 0;">Receitas</h1>
+    <div id="formReceita">
+        <input type="text" id="descricaoReceita" placeholder="Descrição" class="inputDesc">
+        <input type="number" id="valorReceita" placeholder="Valor" class="inputValor">
+        <div class="add">
+            <span id="addReceita" class="material-symbols-outlined">add</span>
+        </div>
+        <table id="tableReceita" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="bodyReceita">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tela de Dividas -->
+<div id="dividasContainer" style="display: none;">
+    <h1 style="margin: 2px 0;">Dívidas</h1>
+    
+</div>
+
+<!-- Tela de Contas de Terceiros -->
+<div id="contasTerceirosContainer" style="display: none;">
+    <h1 style="margin: 2px 0;">Contas de Terceiros</h1>
+
+</div>
+
+</body>
+<script src="js/jquery-3.7.1.min.js"></script>
+<script>
+
+    if(config.receitas == null){
+        config.receitas = [];
+        localStorage.setItem('config', JSON.stringify(config));
+    }
+
+    function addReceita(){
+        let descricao = document.getElementById('descricaoReceita').value;
+        let valor = document.getElementById('valorReceita').value;
+        config.receitas.push({descricao: descricao, valor: valor});
+        localStorage.setItem('config', JSON.stringify(config));
+        document.getElementById('descricaoReceita').value = '';
+        document.getElementById('valorReceita').value = '';
+        document.getElementById('bodyReceita').innerHTML = '';
+        document.getElementById('bodyReceita').innerHTML = `
+            <tr>
+                <td>${descricao}</td>
+                <td>${valor}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        `;
+    }
+
+    function exibeMenu(menu){
+        $('#'+menu).show();
+        $('#buttonContainer').hide();
+        $('#voltar').show();
+    }
+
+    function voltar(){
+        $('#receitasContainer').hide();
+        $('#dividasContainer').hide();
+        $('#contasTerceirosContainer').hide();
+
+        $('#buttonContainer').show();
+        $('#voltar').hide();
+    }
+</script>
+</html>
