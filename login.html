@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2747d6 0%, #1d069e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -80,12 +80,6 @@
             transform: none;
         }
 
-        .error {
-            color: #e74c3c;
-            margin-top: 20px;
-            display: none;
-        }
-
         .success {
             color: #27ae60;
             margin-top: 20px;
@@ -111,19 +105,23 @@
             Criar conta
         </button>
 
-        <div class="error" id="error"></div>
         <div class="success" id="success"></div>
     </div>
 </body>
+<script src="js/main.js"></script>
 <script>
     //busca um config no localstorage
     const config = localStorage.getItem('config')
     if (config) {
-        window.location.href = 'home.html'
+        // window.location.href = 'home.html'
     }
 
     function criarConta() {
         const name = document.getElementById('name').value
+        if(name == '') {
+            AlertError('Informe seu nome para continuar')
+            return
+        }
         if (name) {
             let config = {
                 name: name

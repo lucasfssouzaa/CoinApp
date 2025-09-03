@@ -20,8 +20,7 @@
         margin-bottom: 10px;
     }
 
-    .add{
-        background-color: #0fc918;
+    .add, .editSave{
         color: white;
         padding: 5px;
         border-radius: 5px;
@@ -35,32 +34,75 @@
         position: absolute;
         right: 10px;
     }
+
+    .add{
+        background-color: #0fc918;
+    }
+
+    .editSave{
+        background-color: #007bff;
+    }
+
+    .edit:hover{
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .delete:hover{
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .edit{
+        cursor: pointer;
+    }
+
+    .tableValores{
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        margin-top: 50px;
+    }
+
+    /* icones */
+    .tableValores .material-symbols-outlined{
+        text-align: center;
+    }
+
+    .tableValores td, .tableValores th{
+        padding-left: 10px;
+        text-align: left;
+    }
 </style>
 <body>
-<div id="voltar" style="display: block;">
+<div id="voltar" style="display: none;">
     <span class="material-symbols-outlined" onclick="voltar()">arrow_back</span>
 </div>
 <!-- Tela Inicial de Gastos Fixos -->
 <div id="buttonContainer" style="display: block;">
     <h1>Gastos Fixos</h1>
-    <p>Gastos fixos irão aparecer automaticamente ao consultar algum registro de gastos pela primeira vez</p>
     <div>
-        <button class="btnGastoFixo" id="btnAdicionarGastoFixo" onClick="exibeMenu('receitasContainer')">Receitas</button>
-        <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('dividasContainer')">Dívidas</button>
-        <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('contasTerceirosContainer')">Contas de Terceiros</button>
+        <button class="btnGastoFixo" id="btnAdicionarGastoFixo" onClick="exibeMenu('receitaContainer')">Receitas</button>
+        <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('dividaContainer')">Dívidas</button>
     </div>
+    <p>Gastos fixos irão aparecer automaticamente ao consultar algum registro de gastos pela primeira vez</p>
 </div>
 
 <!-- Tela de Receitas -->
-<div id="receitasContainer" style="display: none;">
+<div id="receitaContainer" style="display: none;">
     <h1 style="margin: 2px 0;">Receitas</h1>
-    <div id="formReceita">
-        <input type="text" id="descricaoReceita" placeholder="Descrição" class="inputDesc">
-        <input type="number" id="valorReceita" placeholder="Valor" class="inputValor">
-        <div class="add">
-            <span id="addReceita" class="material-symbols-outlined">add</span>
+    <div id="form_receita">
+        <input type="text" id="descricao_receita" placeholder="Descrição" class="inputDesc">
+        <input type="number" id="valor_receita" placeholder="Valor" class="inputValor">
+        <input style="display: none;" type="text" id="descricao_edit_receita" placeholder="Descrição" class="inputDesc">
+        <input style="display: none;" type="number" id="valor_edit_receita" placeholder="Valor" class="inputValor">
+        <div class="add" id="add_receita" onClick="addFixo('receita')">
+            <span class="material-symbols-outlined">add</span>
         </div>
-        <table id="tableReceita" style="display: none;">
+        <div class="editSave" id="edit_receita" onClick="salvarFixoEditado('receita', 0)" style="display: none;">
+            <span class="material-symbols-outlined">edit</span>
+        </div>
+        <table id="table_receita" style="display: none;" class="tableValores">
             <thead>
                 <tr>
                     <th>Descrição</th>
@@ -69,20 +111,43 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody id="bodyReceita">
+            <tbody id="body_receita">
             </tbody>
         </table>
     </div>
 </div>
 
 <!-- Tela de Dividas -->
-<div id="dividasContainer" style="display: none;">
+<div id="dividaContainer" style="display: none;">
     <h1 style="margin: 2px 0;">Dívidas</h1>
-    
+    <div id="form_divida">
+        <input type="text" id="descricao_divida" placeholder="Descrição" class="inputDesc">
+        <input type="number" id="valor_divida" placeholder="Valor" class="inputValor">
+        <input style="display: none;" type="text" id="descricao_edit_divida" placeholder="Descrição" class="inputDesc">
+        <input style="display: none;" type="number" id="valor_edit_divida" placeholder="Valor" class="inputValor">
+        <div class="add" id="add_divida" onClick="addFixo('divida')">
+            <span class="material-symbols-outlined">add</span>
+        </div>
+        <div class="editSave" id="edit_divida" onClick="salvarFixoEditado('divida', 0)" style="display: none;">
+            <span class="material-symbols-outlined">edit</span>
+        </div>
+        <table id="table_divida" style="display: none;" class="tableValores">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="body_divida">
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Tela de Contas de Terceiros -->
-<div id="contasTerceirosContainer" style="display: none;">
+<div id="contasTerceiroContainer" style="display: none;">
     <h1 style="margin: 2px 0;">Contas de Terceiros</h1>
 
 </div>
@@ -91,27 +156,78 @@
 <script src="js/jquery-3.7.1.min.js"></script>
 <script>
 
-    if(config.receitas == null){
-        config.receitas = [];
+    if(config.receita == null){
+        config.receita = [];
         localStorage.setItem('config', JSON.stringify(config));
     }
 
-    function addReceita(){
-        let descricao = document.getElementById('descricaoReceita').value;
-        let valor = document.getElementById('valorReceita').value;
-        config.receitas.push({descricao: descricao, valor: valor});
-        localStorage.setItem('config', JSON.stringify(config));
-        document.getElementById('descricaoReceita').value = '';
-        document.getElementById('valorReceita').value = '';
-        document.getElementById('bodyReceita').innerHTML = '';
-        document.getElementById('bodyReceita').innerHTML = `
-            <tr>
+    function formatNumber(valor) {
+        return new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(valor);
+    }
+    
+    // Aguardar o DOM estar pronto antes de executar montarFixo
+    $(document).ready(function() {
+        montarFixo('receita');
+    });
+
+    function montarFixo(table){
+        $('#table_'+table).hide();
+        $('#body_'+table).html('');
+        if(fixos[table]){
+            let fixo = fixos[table];
+            let valor = 0;
+            let descricao = '';
+            for(let i = 0; i < fixo.length; i++){
+                valor = fixo[i].valor;
+                descricao = fixo[i].descricao;
+                valor = formatNumber(valor);
+                $('#body_'+table).append(`
+                    <tr id="${table}${i}">
+                        <td>${descricao}</td>
+                        <td>${valor}</td>
+                        <td><span class="material-symbols-outlined edit" onClick="editarFixo('${table}', ${i})">edit</span></td>
+                        <td><span class="material-symbols-outlined delete" onClick="removerFixo('${table}', ${i})">delete</span></td>
+                    </tr>
+                `);
+            }
+            if(fixo.length > 0){
+                $('#table_'+table).show();
+            }
+        }
+    }
+
+    function addFixo(table){
+        let descricao = document.getElementById('descricao_'+table).value;
+        let valor = document.getElementById('valor_'+table).value;
+        valor = parseFloat(valor);
+        valor = valor.toFixed(2);
+        
+        if(descricao == '' || valor == ''){
+            AlertError('Preencha todos os campos');
+            return;
+        }
+
+        fixos[table].push({descricao: descricao, valor: valor});
+        localStorage.setItem('fixos', JSON.stringify(fixos));
+        document.getElementById('descricao_'+table).value = '';
+        document.getElementById('valor_'+table).value = '';
+
+
+        valor = formatNumber(valor);
+        $('#body_'+table).append(`
+            <tr id="${table}${fixos[table].length - 1}">
                 <td>${descricao}</td>
-                <td>${valor}</td>
-                <td></td>
-                <td></td>
+                <td>${valor}</td>    
+                <td><span class="material-symbols-outlined edit" onClick="editarFixo('${table}', ${fixos[table].length - 1})">edit</span></td>
+                <td><span class="material-symbols-outlined delete" onClick="removerFixo('${table}', ${fixos[table].length - 1})">delete</span></td>
             </tr>
-        `;
+        `);
+        $('#table_'+table).show();
     }
 
     function exibeMenu(menu){
@@ -121,12 +237,78 @@
     }
 
     function voltar(){
-        $('#receitasContainer').hide();
-        $('#dividasContainer').hide();
-        $('#contasTerceirosContainer').hide();
+        $('#receitaContainer').hide();
+        $('#dividaContainer').hide();
+        $('#contasTerceiroContainer').hide();
 
         $('#buttonContainer').show();
         $('#voltar').hide();
+    }
+
+    
+    async function removerFixo(table, id){
+      const descricao = fixos[table][id].descricao;
+      if(table == 'receita'){
+        msgConfirm = `Deseja excluir a receita <b>${descricao}</b>?`;
+      } else if(table == 'divida'){
+        msgConfirm = `Deseja excluir a dívida <b>${descricao}</b>?`;
+      }
+      const response = await showConfirm(msgConfirm);
+      if(response){
+        fixos[table].splice(id, 1);
+        localStorage.setItem('fixos', JSON.stringify(fixos));
+        montarFixo(table);
+        // faça a ação desejada aqui
+      } else {
+        console.log('Confirmação cancelada');
+      }
+    }
+
+    let editId = '';
+
+    function editarFixo(table, id){
+        editId = id;
+        $('#table_'+table).hide();
+        $('#descricao_edit_'+table).val(fixos[table][id].descricao);
+        $('#valor_edit_'+table).val(fixos[table][id].valor);
+        
+        $('#descricao_'+table).hide();
+        $('#valor_'+table).hide();
+        $('#add_'+table).hide();
+        $('#descricao_edit_'+table).show();
+        $('#valor_edit_'+table).show();
+        $('#edit_'+table).show();
+    }
+
+    function salvarFixoEditado(table){
+        let descricao = document.getElementById('descricao_edit_'+table).value;
+        let valor = document.getElementById('valor_edit_'+table).value;
+        valor = parseFloat(valor);
+        valor = valor.toFixed(2);
+        
+        fixos[table][editId].descricao = descricao;
+        fixos[table][editId].valor = valor;
+        localStorage.setItem('fixos', JSON.stringify(fixos));
+        $('#descricao_edit_'+table).hide();
+        $('#valor_edit_'+table).hide();
+        $('#edit_'+table).hide();
+        $('#descricao_'+table).show();
+        $('#valor_'+table).show();
+        $('#add_'+table).show();
+
+        //Altera o valor na tabela
+        valor = formatNumber(valor);
+        $('#'+table+editId).find('td:nth-child(2)').text(valor);
+        $('#'+table+editId).find('td:nth-child(1)').text(descricao);
+        $('#table_'+table).show();
+
+        //faz a linha mudar de cor levemente durante 1 segundo com um leve efeito de transição
+        $('#'+table+editId).css('background-color', '#6d6d6d');
+        $('#'+table+editId).css('transition', 'background-color 0.5s ease');
+        setTimeout(function(){
+            $('#'+table+editId).css('background-color', 'transparent');
+            $('#'+table+editId).css('transition', 'background-color 0.5s ease');
+        }, 500);
     }
 </script>
 </html>

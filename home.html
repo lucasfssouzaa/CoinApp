@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <script src="../js/jquery-3.7.1.min.js"></script>
   <script src="../js/main.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
   <style>
     :root {
       --bg: #ffffff;
@@ -172,7 +173,6 @@
     }
 
     .user-name {
-        color: #333;
         font-weight: 500;
     }
 
@@ -313,11 +313,31 @@
     <div class="theme-toggle" id="toggleTheme">🌞/🌙 Alternar Tema</div>
     
   </aside>
+  <div class="confirm-overlay" id="confirmOverlay" aria-hidden="true">
+    <div class="confirm-box" role="dialog" aria-modal="true">
+      <div id="confirmMessage"></div>
+      <div class="confirm-buttons">
+        <button id="btnOk">OK</button>
+        <button id="btnCancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </body>
     <script src="js/jquery-3.7.1.min.js"></script>
     
     <script>
-        const config = JSON.parse(localStorage.getItem('config'))
+      
+        let fixos = JSON.parse(localStorage.getItem('fixos'))
+        if(!fixos){
+          fixos = {
+            receita: [],
+            divida: [],
+            contasTerceiro: []
+          }
+          localStorage.setItem('fixos', JSON.stringify(fixos));
+        }
+
+        let config = JSON.parse(localStorage.getItem('config'))
         document.getElementById('userName').textContent = config.name
 
         const theme = localStorage.getItem('theme')
@@ -411,5 +431,4 @@
         });
         })();
     </script>
-</body>
 </html> 

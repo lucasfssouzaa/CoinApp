@@ -1,0 +1,87 @@
+/* Alerts */
+.overlay-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  .alert-box {
+    background: #fff;
+    border-radius: 5px;
+    min-width: 280px;
+    max-width: 400px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    animation: slideIn 0.25s ease-out;
+    overflow: hidden;
+  }
+
+  .alert-header {
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    text-align: left;
+  }
+
+  .alert-message {
+    padding: 20px;
+    text-align: left;
+    color: #333;
+  }
+
+  .error .alert-header { background: #e74c3c; }
+  .success .alert-header { background: #2ecc71; }
+  .info .alert-header { background: #3498db; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+/* Box Confirm */
+.confirm-overlay {
+    display: none; /* Oculto por padrão */
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5); z-index: 999;
+    justify-content: center; align-items: center;
+  }
+  .confirm-overlay.show { display:flex; }
+  .confirm-box {
+    background: #fff; padding: 20px 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    text-align: center; max-width: 350px; color: #1b1b1b;
+  }
+  .confirm-buttons { margin-top: 24px; }
+  .confirm-buttons button { 
+    margin: 0 10px; 
+    padding: 6px 24px; 
+    cursor:pointer;
+    border-radius: 5px;
+    border: none;
+  }
+  #btnOk { 
+    background: #403ed4; 
+    color: #fff; 
+  }
+
+  #btnCancel { 
+    background: #7a7a7a; 
+    color: #fff; 
+  }
+
+  #btnOk:hover { background: #2c2ab1; }
+  #btnCancel:hover { background: #616161; }
