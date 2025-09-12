@@ -1,8 +1,20 @@
 <html lang="pt-br">
 <body>
   <h1>Configuracoes</h1>
+  <button onclick="AlertSuccess('teste')">Success</button>
+  <button onclick="AlertError('teste')">Error</button>
+  <button onclick="AlertInfo('teste')">Info</button>
+  <button onclick="abrirConfirmacao()">Abrir Confirmação</button>
 </body>
 <script>
-
+  async function abrirConfirmacao(){
+      const response = await showConfirm('Tem certeza que deseja <b>prosseguir?</b>');
+      if(response){
+        console.log('Confirmação aceita');
+        // faça a ação desejada aqui
+      } else {
+        console.log('Confirmação cancelada');
+      }
+    }
 </script>
 </html>

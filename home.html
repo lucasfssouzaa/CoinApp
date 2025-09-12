@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>App Mobile — Menu Lateral</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
   <script src="../js/jquery-3.7.1.min.js"></script>
   <script src="../js/main.js"></script>
+  <script src="../js/functions.js"></script>
+  <script src="../js/crud.js"></script>
   <link rel="stylesheet" href="css/styles.css">
   <style>
     :root {
@@ -14,7 +18,7 @@
       --card: #f7f9fb;
       --text: #111111;
       --muted: #666666;
-      --primary: #2dd4bf;
+      --primary: #2C2AB1;
       --overlay: rgba(0,0,0,.6);
       --shadow: 0 10px 30px rgba(0,0,0,.15);
       --radius: 16px;
@@ -25,7 +29,7 @@
       --card: #121821;
       --text: #e6edf3;
       --muted: #9db1c7;
-      --primary: #2dd4bf;
+      --primary: #2C2AB1;
       --overlay: rgba(0,0,0,.6);
       --shadow: 0 10px 30px rgba(0,0,0,.25);
       --radius: 16px;
@@ -258,25 +262,10 @@
 <body>
   <main class="content">
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card" onClick="carregarPagina('html/seletorData.html')">
         <div class="stat-icon">💰</div>
           <div class="stat-value">R$ 0,00</div>
           <div class="stat-label">Saldo Atual</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">📈</div>
-          <div class="stat-value">0</div>
-          <div class="stat-label">Transações</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🎯</div>
-          <div class="stat-value">0</div>
-          <div class="stat-label">Metas</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
-            <div class="stat-value">0%</div>
-            <div class="stat-label">Economia</div>
         </div>
       </div>
     </div>
@@ -304,8 +293,9 @@
     <nav>
       <ul class="menu-list">
         <li><a class="menu-link" href="home.html">🏠 Início</a></li>
-        <li><a class="menu-link" href="#" onClick="carregarPagina('controleFinanceiro.html')">💰 Controle Financeiro</a></li>
+        <li><a class="menu-link" href="#" onClick="carregarPagina('html/seletorData.html')">💵 Controle Financeiro</a></li>
         <li><a class="menu-link" href="#" onClick="carregarPagina('gastosFixos.html')">💰 Gastos fixos</a></li>
+        <li><a class="menu-link" href="#" onClick="carregarPagina('categorias.html')">🗂️ Categorias</a></li>
         <li><a class="menu-link" href="#" onClick="carregarPagina('configuracoes.html')">⚙️ Configurações</a></li>
       </ul>
     </nav>
@@ -322,22 +312,40 @@
       </div>
     </div>
   </div>
+  <div class="confirm-overlay" id="confirmOverlayYesNo" aria-hidden="true">
+    <div class="confirm-box" role="dialog" aria-modal="true">
+      <div id="confirmMessageYesNo"></div>
+      <div class="confirm-buttons">
+        <button id="btnYes">Sim</button>
+        <button id="btnNo">Não</button>
+      </div>
+    </div>
+  </div>
 </body>
     <script src="js/jquery-3.7.1.min.js"></script>
     
     <script>
-      
-        let fixos = JSON.parse(localStorage.getItem('fixos'))
-        if(!fixos){
-          fixos = {
-            receita: [],
-            divida: [],
-            contasTerceiro: []
-          }
-          localStorage.setItem('fixos', JSON.stringify(fixos));
-        }
+        // Variaveis globais
+        let editId = [];
+
+        var agora = new Date();
+        var ano = agora.getFullYear();
+        var mes = String(agora.getMonth() + 1).padStart(2,"0");
+        var mesView = ano + "-" + mes;
+        var mesAtual = mesView;
 
         let config = JSON.parse(localStorage.getItem('config'))
+        console.log(config);
+        
+        if(!config.receita){
+          config.receita = [];
+          localStorage.setItem('config', JSON.stringify(config));
+        }
+        if(!config.despesa){
+          config.despesa = [];
+          localStorage.setItem('config', JSON.stringify(config));
+        }
+
         document.getElementById('userName').textContent = config.name
 
         const theme = localStorage.getItem('theme')

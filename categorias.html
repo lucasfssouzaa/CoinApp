@@ -1,0 +1,304 @@
+<html lang="pt-br">
+<style>
+    .btnCategoria, .btnSubCategoria{
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        width: -webkit-fill-available;
+        margin: 10px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .inputDesc, .inputValor{
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+
+    .add, .editSave{
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        width: 30px;
+        margin: 10px;
+        height: 30px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 10px;
+    }
+
+    .add{
+        background-color: #0fc918;
+    }
+
+    .editSave{
+        background-color: #007bff;
+    }
+
+    .edit:hover{
+        color: #007bff;
+    }
+    
+    .delete:hover{
+        color: #dc3545;
+    }
+
+    .edit, .delete{
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 18px;
+    }
+</style>
+<body>
+<div id="voltar" style="display: none;">
+    <span onclick="voltar()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 13H15q.425 0 .713-.288T16 12t-.288-.712T15 11h-3.2l.9-.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275l-2.6 2.6q-.3.3-.3.7t.3.7l2.6 2.6q.275.275.7.275t.7-.275t.275-.7t-.275-.7zm.2 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></span>
+</div>
+<!-- Tela Inicial de Categorias -->
+<div id="buttonContainer" style="display: block;">
+    <h1>Categorias</h1>
+    <div>
+        <button class="btnCategoria" id="btnAdicionarCategoria" onClick="exibeMenu('categoriaContainer')">Categorias</button>
+        <button class="btnSubCategoria" id="btnEditarSubCategoria" onClick="exibeMenu('subcategoriaContainer')">Subcategorias</button>
+    </div>
+    <p></p>
+</div>
+
+<!-- Tela de Categorias -->
+<div id="categoriaContainer" style="display: none;">
+    <h1>Categorias</h1>
+    <div id="form_categoria">
+        <input type="text" id="nome_categoria" placeholder="Nome da categoria" class="inputDesc">
+        <input style="display: none;" type="text" id="nome_edit_categoria" placeholder="Nome da categoria" class="inputDesc">
+        <div class="add" id="add_categoria" onClick="addFixo('categoria')">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg></span>
+        </div>
+        <div class="editSave" id="edit_categoria" onClick="salvarFixoEditado('categoria', 0)" style="display: none;">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M4 21q-.425 0-.712-.288T3 20v-2.425q0-.4.15-.763t.425-.637L16.2 3.575q.3-.275.663-.425t.762-.15t.775.15t.65.45L20.425 5q.3.275.437.65T21 6.4q0 .4-.138.763t-.437.662l-12.6 12.6q-.275.275-.638.425t-.762.15zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z"/></svg></span>
+        </div>
+        <table id="table_categoria" style="display: none;" class="tableValores">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th style="width: 40px;"></th>
+                    <th style="width: 40px;"></th>
+                </tr>
+            </thead>
+            <tbody id="body_categoria">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tela de Subcategorias -->
+<div id="subcategoriaContainer" style="display: none;">
+    <h1>Subcategorias</h1>
+    <div id="form_subcategoria">
+        <input type="text" id="nome_subcategoria" placeholder="Nome da subcategoria" class="inputDesc">
+        <input style="display: none;" type="text" id="nome_edit_subcategoria" placeholder="Nome da subcategoria" class="inputDesc">
+        <div class="add" id="add_subcategoria" onClick="addFixo('subcategoria')">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg></span>
+        </div>
+        <div class="editSave" id="edit_subcategoria" onClick="salvarFixoEditado('subcategoria', 0)" style="display: none;">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M4 21q-.425 0-.712-.288T3 20v-2.425q0-.4.15-.763t.425-.637L16.2 3.575q.3-.275.663-.425t.762-.15t.775.15t.65.45L20.425 5q.3.275.437.65T21 6.4q0 .4-.138.763t-.437.662l-12.6 12.6q-.275.275-.638.425t-.762.15zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z"/></svg></span>
+        </div>
+        <table id="table_subcategoria" style="display: none;" class="tableValores">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th style="width: 40px;"></th>
+                    <th style="width: 40px;"></th>
+                </tr>
+            </thead>
+            <tbody id="body_subcategoria">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+<script src="js/jquery-3.7.1.min.js"></script>
+<script>
+
+    if(!config.categoria){
+        config.categoria = [];
+        localStorage.setItem('config', JSON.stringify(config));
+    }
+    if(!config.subcategoria){
+        config.subcategoria = [];
+        localStorage.setItem('config', JSON.stringify(config));
+    }
+
+    // Aguardar o DOM estar pronto antes de executar montarFixo
+    $(document).ready(function() {
+        montarFixo('categoria');
+        montarFixo('subcategoria');
+    });
+
+    function montarFixo(table){
+        $('#table_'+table).hide();
+        $('#body_'+table).html('');
+        if(config[table]){
+            let fixo = config[table];
+            let nome = '';
+            for(let i = 0; i < fixo.length; i++){
+                nome = fixo[i].nome;
+                $('#body_'+table).append(`
+                    <tr id="${table}${i}">
+                        <td>${nome}</td>
+                        <td><span onClick="editarFixo('${table}', ${i})"><svg class="edit icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -1 24 24"><path fill="currentColor" d="M6 22q-1.25 0-2.125-.875T3 19v-2q0-.425.288-.712T4 16h2V4q0-.825.588-1.412T8 2h11q.825 0 1.413.588T21 4v6q0 .425-.288.713T20 11t-.712-.288T19 10V4H8v12h3.975q.575 0 .788.513t-.188.912q-.275.275-.425.638t-.15.762V21q0 .425-.288.713T11 22zm8-1v-1.65q0-.2.075-.4t.225-.325l5.225-5.2q.225-.225.5-.325t.55-.1q.3 0 .575.113t.5.337l.925.925q.2.225.313.5t.112.55t-.1.563t-.325.512l-5.2 5.2q-.125.125-.325.213t-.4.087H15q-.425 0-.712-.288T14 21m6.575-4.6l.925-.975l-.925-.925l-.95.95zM10 10h7q.425 0 .713.288T18 11t-.288.713T17 12h-7q-.425 0-.712-.288T9 11t.288-.712T10 10m0-3h7q.425 0 .713.288T18 8t-.288.713T17 9h-7q-.425 0-.712-.288T9 8t.288-.712T10 7"/></svg></span></td>
+                        <td><span class="delete icon" onClick="removerFixo('${table}', ${i})"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 -1 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg></span></td>
+                    </tr>
+                `);
+            }
+            if(fixo.length > 0){
+                $('#table_'+table).show();
+            }
+        }
+    }
+
+    function addFixo(table){
+        let nome = document.getElementById('nome_'+table).value;
+
+        // varre todo o config.table
+        for(let i = 0; i < config[table].length; i++){
+            if(config[table][i].nome == nome){
+                //nome da table maiusculo
+                let msgExiste = table.charAt(0).toUpperCase() + table.slice(1) + ' <b>' + nome + '</b> já existe';
+                AlertError(msgExiste);
+                return;
+            }
+        }
+        
+        if(nome == ''){
+            AlertError('Preencha o campo nome');
+            return;
+        }
+
+        config[table].push({nome: nome});
+        localStorage.setItem('config', JSON.stringify(config));
+        document.getElementById('nome_'+table).value = '';
+
+        $('#body_'+table).append(`
+            <tr id="${table}${config[table].length - 1}">
+                <td>${nome}</td>
+                <td><span class="edit icon" onClick="editarFixo('${table}', ${config[table].length - 1})"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -1 24 24"><path fill="currentColor" d="M6 22q-1.25 0-2.125-.875T3 19v-2q0-.425.288-.712T4 16h2V4q0-.825.588-1.412T8 2h11q.825 0 1.413.588T21 4v6q0 .425-.288.713T20 11t-.712-.288T19 10V4H8v12h3.975q.575 0 .788.513t-.188.912q-.275.275-.425.638t-.15.762V21q0 .425-.288.713T11 22zm8-1v-1.65q0-.2.075-.4t.225-.325l5.225-5.2q.225-.225.5-.325t.55-.1q.3 0 .575.113t.5.337l.925.925q.2.225.313.5t.112.55t-.1.563t-.325.512l-5.2 5.2q-.125.125-.325.213t-.4.087H15q-.425 0-.712-.288T14 21m6.575-4.6l.925-.975l-.925-.925l-.95.95zM10 10h7q.425 0 .713.288T18 11t-.288.713T17 12h-7q-.425 0-.712-.288T9 11t.288-.712T10 10m0-3h7q.425 0 .713.288T18 8t-.288.713T17 9h-7q-.425 0-.712-.288T9 8t.288-.712T10 7"/></svg></span></td>
+                <td><span class="delete icon" onClick="removerFixo('${table}', ${config[table].length - 1})"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 -1 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg></span></td>
+            </tr>
+        `);
+        $('#table_'+table).show();
+    }
+
+    function exibeMenu(menu){
+        $('#'+menu).show();
+        $('#buttonContainer').hide();
+        $('#voltar').show();
+    }
+
+    function voltar(){
+        $('#categoriaContainer').hide();
+        $('#subcategoriaContainer').hide();
+
+        $('#buttonContainer').show();
+        $('#voltar').hide();
+    }
+
+    
+    async function removerFixo(table, id){
+      const nome = config[table][id].nome;
+      if(table == 'categoria'){
+        msgConfirm = `Deseja excluir a categoria <b>${nome}</b>?`;
+      } else if(table == 'subcategoria'){
+        msgConfirm = `Deseja excluir a subcategoria <b>${nome}</b>?`;
+      }
+      const response = await showConfirm(msgConfirm);
+      if(response){
+        if(table == 'categoria'){
+          if(ehDespesa(nome)){
+            AlertError('A categoria <b>' + nome + '</b> está associada a uma despesa e não pode ser excluída');
+            return;
+          }
+        }
+        config[table].splice(id, 1);
+        localStorage.setItem('config', JSON.stringify(config));
+        montarFixo(table);
+        // faça a ação desejada aqui
+      } else {
+        console.log('Confirmação cancelada');
+      }
+    }
+
+    function ehDespesa(nome){
+        for(let i = 0; i < config.despesa.length; i++){
+            if(config.despesa[i].descricao == nome){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function editarFixo(table, id){
+        editId[table] = id;
+        
+        $('#table_'+table).hide();
+        $('#nome_edit_'+table).val(config[table][id].nome);
+        
+        $('#nome_'+table).hide();
+        $('#add_'+table).hide();
+        $('#nome_edit_'+table).show();
+        $('#edit_'+table).show();
+    }
+
+    function salvarFixoEditado(table){
+        let nome = document.getElementById('nome_edit_'+table).value;
+        let nomeOriginal = config[table][editId[table]].nome;
+        
+        if(nome == ''){
+            AlertError('Preencha o campo nome');
+            return;
+        }
+
+        if(table == 'categoria' && nomeOriginal != nome){
+            if(ehDespesa(nomeOriginal)){
+                AlertError('A categoria <b>' + nomeOriginal + '</b> está associada a uma despesa e não pode ter o nome alterado');
+                return;
+            }
+        }
+
+        for(let i = 0; i < config[table].length; i++){
+            if(config[table][i].nome == nome && i != editId[table]){
+                //nome da table maiusculo
+                let msgExiste = table.charAt(0).toUpperCase() + table.slice(1) + ' <b>' + nome + '</b> já existe';
+                AlertError(msgExiste);
+                return;
+            }
+        }
+        
+        config[table][editId[table]].nome = nome;
+        localStorage.setItem('config', JSON.stringify(config));
+        $('#nome_edit_'+table).hide();
+        $('#edit_'+table).hide();
+        $('#nome_'+table).show();
+        $('#add_'+table).show();
+
+        //Altera o valor na tabela
+        $('#'+table+editId[table]).find('td:nth-child(1)').text(nome);
+        $('#table_'+table).show();
+
+        //faz a linha mudar de cor levemente durante 1 segundo com um leve efeito de transição
+        $('#'+table+editId[table]).css('background-color', '#6d6d6d');
+        $('#'+table+editId[table]).css('transition', 'background-color 0.5s ease');
+        setTimeout(function(){
+            $('#'+table+editId[table]).css('background-color', 'transparent');
+            $('#'+table+editId[table]).css('transition', 'background-color 0.5s ease');
+        }, 500);
+    }
+</script>
+</html>

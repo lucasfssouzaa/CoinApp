@@ -1,0 +1,138 @@
+<html lang="pt-br">
+    <style>
+        #loading{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #iconLoading{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 120px;
+        }
+
+        .tela {
+            display: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .tela.ativa {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: var(--card);
+        }
+
+        .menu-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .menu-highlight {
+            position: absolute;
+            bottom: 0;
+            width: 25%;
+            height: 100%;
+            background: rgba(128, 128, 128, 0.5);
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+    </style>
+<body>
+<div id="voltar" style="display: block;">
+    <span onclick="voltar()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 13H15q.425 0 .713-.288T16 12t-.288-.712T15 11h-3.2l.9-.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275l-2.6 2.6q-.3.3-.3.7t.3.7l2.6 2.6q.275.275.7.275t.7-.275t.275-.7t-.275-.7zm.2 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></span>
+</div>
+<!-- Loading -->
+<div id="loading" style="display: block;">
+    <div id="iconLoading"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="3.5" r="1.5"><animateTransform attributeName="transform" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="0 12 12;90 12 12;180 12 12;270 12 12"/><animate attributeName="opacity" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle><circle cx="12" cy="3.5" r="1.5" transform="rotate(30 12 12)"><animateTransform attributeName="transform" begin="0.2s" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="30 12 12;120 12 12;210 12 12;300 12 12"/><animate attributeName="opacity" begin="0.2s" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle><circle cx="12" cy="3.5" r="1.5" transform="rotate(60 12 12)"><animateTransform attributeName="transform" begin="0.4s" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="60 12 12;150 12 12;240 12 12;330 12 12"/><animate attributeName="opacity" begin="0.4s" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle></g></svg></div>
+</div>
+
+<!-- Controle Financeiro -->
+<div id="controleFinanceiro_container" style="display: none;">
+    <div class="tela ativa" id="tela1">Tela 1</div>
+    <div class="tela" id="tela2">Tela 2</div>
+    <div class="tela" id="tela3">Tela 3</div>
+    <div class="tela" id="tela4">Tela 4</div>
+
+    <div class="menu">
+        <div class="menu-highlight"></div>
+        <div class="menu-item" data-tela="tela1">💰<br>Receitas</div>
+        <div class="menu-item" data-tela="tela2">💳<br>Dívidas</div>
+        <div class="menu-item" data-tela="tela3">⭐<br>Provisões</div>
+        <div class="menu-item" data-tela="tela4">📊<br>Relatório</div>
+    </div>
+
+</div>
+
+</body>
+<script>
+    // Inicia o quadro cinza à esquerda
+	document.querySelector('.menu-highlight').style.transform = `translateX(${-150}%)`
+
+    document.querySelectorAll('.menu-item').forEach((item, index) => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
+        document.getElementById(item.dataset.tela).classList.add('ativa')
+        document.querySelector('.menu-highlight').style.transform = `translateX(${index * 100 -150}%)`
+      })
+    })
+    // verifica se existe no localStorage um controleFinanceiro
+    if(!localStorage.getItem('controleFinanceiro')){
+        // seta o controle financeiro como um array vazio
+        let controleFinanceiro = {
+            saldoAtual: 0,
+            receitas: [],
+            provisoes: [],
+            despesas: []
+        };
+        localStorage.setItem('controleFinanceiro', JSON.stringify(controleFinanceiro));
+    } else {
+        controleFinanceiro = JSON.parse(localStorage.getItem('controleFinanceiro'));
+    }
+
+    function voltar(){
+        carregarPagina('html/seletorData.html');
+    }
+
+    if(!mesCadastrado(mesView) && mesView >= mesAtual){
+        console.log('addFixos: ', mesView)
+        addFixos(mesView);
+        controleFinanceiro = JSON.parse(localStorage.getItem('controleFinanceiro'));
+    }
+    console.log(controleFinanceiro);
+
+    // Fim dos comandos de inicialização
+    $('#loading').hide();
+    $('#controleFinanceiro_container').show();
+
+    // Funcoes de Receita
+        
+    // Funcoes de Provisao
+
+    // Funcoes de Despesa
+
+    // Funcoes de Relatório
+</script>
+</html>

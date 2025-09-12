@@ -1,3 +1,11 @@
+:root {
+  --borderMedium: #f0f0f0;
+}
+
+body.dark {
+  --borderMedium: #3d3d3d;
+}
+
 /* Alerts */
 .overlay-alert {
     position: fixed;
@@ -85,3 +93,55 @@
 
   #btnOk:hover { background: #2c2ab1; }
   #btnCancel:hover { background: #616161; }
+
+  #btnYes { 
+    background: #403ed4; 
+    color: #fff; 
+  }
+
+  #btnNo { 
+    background: #7f2121; 
+    color: #fff; 
+  }
+
+  #btnYes:hover { background: #4a48e3; }
+  #btnNo:hover { background: #b12f2f; }
+
+  /* Table Values */
+  .tableValores{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    margin-top: 50px;
+}
+
+/* icones */
+.tableValores .icon{
+    text-align: center;
+}
+
+.tableValores td, .tableValores th{
+    padding-left: 10px;
+    text-align: left;
+}
+
+#voltar{
+  position: absolute;
+}
+
+h1{
+  margin: 0 30px;
+}
+
+.tableValores {
+  border-radius: 5px;
+}
+
+.tableValores th{
+  background-color: #007bff;
+  color: white;
+}
+
+.tableValores td{
+  border-bottom: 1px solid var(--borderMedium);
+}

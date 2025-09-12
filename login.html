@@ -123,10 +123,22 @@
             return
         }
         if (name) {
+            localStorage.clear()
             let config = {
-                name: name
+                name: name,
+                categoria: [],
+                subcategoria: [],
+                receita: [],
+                despesa: [],
+                mesesCad: []
+            }
+            let idRef = {
+                receitas: 1,
+                despesas: 1,
+                provisoes: 1
             }
             localStorage.setItem('config', JSON.stringify(config))
+            localStorage.setItem('idRef', JSON.stringify(idRef))
             window.location.href = 'home.html'
         }
     }

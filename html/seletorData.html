@@ -1,0 +1,166 @@
+<html lang="pt-br">
+<style>
+:root {
+  --bg-overlay: rgba(0,0,0,.6);
+  --bg-popup: var(--card);
+  --border-color: rgba(0,0,0,.06);
+  --txt: var(--text);
+  --muted: var(--muted);
+  --btn-bg: var(--card);
+  --btn-border: rgba(0,0,0,.06);
+  --btn-bg-hover: #eef2f5;
+  --btn-border-hover: rgba(0,0,0,.12);
+  --acao-bg: linear-gradient(90deg, var(--primary), #19177a);
+  --acao-shadow: rgba(44, 42, 177,.35);
+  --bolinha: radial-gradient(circle at 30% 30%, var(--primary), #19177a);
+  --bolinha-shadow: 0 0 16px rgba(44, 42, 177,.4);
+}
+
+body.dark {
+  --bg-overlay: rgba(0,0,0,.6);
+  --bg-popup: var(--card);
+  --border-color: rgba(255,255,255,.06);
+  --txt: var(--text);
+  --muted: var(--muted);
+  --btn-bg: var(--card);
+  --btn-border: rgba(255,255,255,.06);
+  --btn-bg-hover: #1a232e;
+  --btn-border-hover: rgb(44, 42, 177,.5);
+  --acao-bg: linear-gradient(90deg, var(--primary), #19177a);
+  --acao-shadow: rgba(44, 42, 177,.45);
+  --bolinha: radial-gradient(circle at 30% 30%, var(--primary), #19177a);
+  --bolinha-shadow: 0 0 16px rgba(44, 42, 177,.6);
+}
+
+.overlay2 {
+  position:fixed; inset:0; display:grid; place-items:center;
+  background:var(--bg-overlay); backdrop-filter: blur(4px);
+  opacity:0; pointer-events:none; transition: opacity .28s ease;
+}
+.overlay2.aberto { opacity:1; pointer-events:auto; }
+
+.popup {
+  width:min(92vw,400px); background:var(--bg-popup);
+  border:1px solid var(--border-color);
+  border-radius:18px; box-shadow: 0 20px 50px rgba(0,0,0,.15);
+  transform: translateY(8px) scale(.98); opacity:0;
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .28s ease;
+}
+.overlay2.aberto .popup { transform: translateY(0) scale(1); opacity:1; }
+
+.cabecalho { padding:18px 18px 8px; display:flex; align-items:center; gap:10px; }
+.bolinha { width:8px; height:8px; border-radius:50%; background: var(--bolinha); box-shadow: var(--bolinha-shadow); }
+.titulo { font-size:16px; letter-spacing:.2px; color:var(--txt); }
+
+.conteudo { padding:18px; display:grid; gap:14px; }
+.linha { display:flex; align-items:center; gap:10px; }
+
+.botao-icon {
+  width:44px; height:44px; border-radius:12px;
+  border:1px solid var(--btn-border); background:var(--btn-bg);
+  display:grid; place-items:center; cursor:pointer;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease;
+}
+.botao-icon:hover { background:var(--btn-bg-hover); border-color: var(--btn-border-hover); }
+.botao-icon:active { transform: translateY(1px) scale(.98); }
+
+.icone { width:20px; height:20px; display:block; }
+
+.campo {
+  flex:1; height:44px; border-radius:12px; border:1px solid var(--btn-border);
+  background:var(--btn-bg); color:var(--txt); padding:0 12px; font-size:15px; letter-spacing:.3px;
+}
+.campo::-webkit-calendar-picker-indicator { filter: invert(1) opacity(.8); }
+
+.acao {
+  margin-top:6px; height:46px; border:none; border-radius:14px;
+  background:var(--acao-bg); color:white; font-weight:600; letter-spacing:.3px;
+  cursor:pointer; transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+}
+.acao:hover { filter: brightness(1.05); box-shadow: 0 8px 22px var(--acao-shadow); }
+.acao:active { transform: translateY(1px) scale(.99); }
+
+.sub { font-size:12px; color:var(--muted); }
+
+.seta {
+  color: var(--text);
+}
+</style>
+<body>
+  <div id="overlay2" class="overlay2">
+    <div class="popup">
+      <div class="cabecalho">
+        <div class="bolinha"></div>
+        <div class="titulo">Selecionar período de lançamentos</div>
+      </div>
+      <div class="conteudo">
+        <div class="linha">
+          <button id="menos" class="botao-icon" aria-label="Mês anterior">
+            <svg class="icone seta" viewBox="0 0 24 24" fill="none">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+  
+          <input id="mesAno" class="campo" type="month" inputmode="numeric">
+  
+          <button id="mais" class="botao-icon" aria-label="Próximo mês">
+            <svg class="icone seta" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+  
+        <!-- <div class="sub">Use as setas ou abra o seletor para escolher o mês.</div> -->
+  
+        <button id="pesquisar" class="acao">Pesquisar</button>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  function definirMesAtual(campo) {
+    campo.value = ano + "-" + mes;
+  }
+
+  function alterarMes(campo, delta) {
+    var base = campo.value ? new Date(campo.value + "-01T00:00:00") : new Date();
+    var ano = base.getFullYear();
+    var mes = base.getMonth();
+    var alvo = new Date(ano, mes + delta, 1);
+    var novoAno = alvo.getFullYear();
+    var novoMes = String(alvo.getMonth() + 1).padStart(2,"0");
+    campo.value = novoAno + "-" + novoMes;
+  }
+
+  function iniciarMenuData(){
+    var overlay2 = document.getElementById("overlay2");
+    var campo = document.getElementById("mesAno");
+    var botaoMenos = document.getElementById("menos");
+    var botaoMais = document.getElementById("mais");
+    var botaoPesquisar = document.getElementById("pesquisar");
+
+    definirMesAtual(campo);
+    requestAnimationFrame(function(){ overlay2.classList.add("aberto"); });
+
+    botaoMenos.addEventListener("click", function(){ alterarMes(campo, -1); });
+    botaoMais.addEventListener("click", function(){ alterarMes(campo, 1); });
+
+    botaoPesquisar.addEventListener("click", function(){
+      var anoPesquisa = campo.value.split("-")[0];
+      var mesPesquisa = campo.value.split("-")[1];
+      ano = anoPesquisa;
+      mes = mesPesquisa;
+      mesView = campo.value;
+      // chama o arquivo de pesquisa
+      carregarPagina('html/controleFinanceiro.html');
+    });
+
+    campo.addEventListener("keydown", function(e){
+      if (e.key === "ArrowLeft") { e.preventDefault(); alterarMes(campo, -1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); alterarMes(campo, 1); }
+      if (e.key === "Enter") { e.preventDefault(); botaoPesquisar.click(); }
+    });
+  };
+  iniciarMenuData();
+</script>
+</html>
