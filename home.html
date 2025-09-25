@@ -250,7 +250,7 @@
   </style>
 </head>
 <header class="topbar">
-  <h1 class="app-title" id="app-title">🪙 Coin</h1>
+  <h1 class="app-title" id="app-title" onClick="window.location.href='home.html'">🪙 Coin</h1>
   <button class="icon-btn" id="btnOpen" aria-label="Abrir menu" aria-haspopup="menu" aria-controls="menu" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="3" y1="6" x2="21" y2="6"/>
@@ -264,8 +264,8 @@
     <div class="stats-grid">
       <div class="stat-card" onClick="carregarPagina('html/seletorData.html')">
         <div class="stat-icon">💰</div>
-          <div class="stat-value">R$ 0,00</div>
-          <div class="stat-label">Saldo Atual</div>
+          <div class="stat-value" id="balancoMensal">R$ 0,00</div>
+          <div class="stat-label">Balanço Mensal Atual</div>
         </div>
       </div>
     </div>
@@ -327,12 +327,18 @@
     <script>
         // Variaveis globais
         let editId = [];
+        let gastosPorCategoria = [];
+        let gastosPorSubcategoria = [];
+        let valoresReceitas = [];
 
         var agora = new Date();
         var ano = agora.getFullYear();
         var mes = String(agora.getMonth() + 1).padStart(2,"0");
         var mesView = ano + "-" + mes;
         var mesAtual = mesView;
+
+        let tabs = '';
+        let panels = '';
 
         let config = JSON.parse(localStorage.getItem('config'))
         console.log(config);
@@ -438,5 +444,26 @@
             localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         });
         })();
+
+    animarValor('#balancoMensal', getBalancoMensal(mesAtual, 1));
+
+    function animarValor(elemento, valorFinal, duracao = 1000) {
+      let inicio = 0;
+      let incremento = valorFinal / (duracao / 16); // 16ms ~ 60fps
+      let valorAtual = inicio;
+
+      function atualizar() {
+          valorAtual += incremento;
+          if ((incremento > 0 && valorAtual >= valorFinal) || (incremento < 0 && valorAtual <= valorFinal)) {
+              valorAtual = valorFinal;
+              $(elemento).text(formatNumber(valorAtual));
+          } else {
+              $(elemento).text(formatNumber(valorAtual));
+              requestAnimationFrame(atualizar);
+          }
+      }
+
+      atualizar();
+    }
     </script>
 </html> 

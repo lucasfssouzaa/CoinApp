@@ -143,6 +143,7 @@
     });
 
     function montarFixo(table){
+        let config = JSON.parse(localStorage.getItem('config'));
         $('#table_'+table).hide();
         $('#body_'+table).html('');
         if(config[table]){
@@ -166,6 +167,13 @@
 
     function addFixo(table){
         let nome = document.getElementById('nome_'+table).value;
+        nome = nome.trim();
+        if(nome == ''){
+            AlertError('Preencha o nome da ' + table);
+            return;
+        }
+
+        let config = JSON.parse(localStorage.getItem('config'));
 
         // varre todo o config.table
         for(let i = 0; i < config[table].length; i++){
@@ -212,6 +220,7 @@
 
     
     async function removerFixo(table, id){
+      let config = JSON.parse(localStorage.getItem('config'));
       const nome = config[table][id].nome;
       if(table == 'categoria'){
         msgConfirm = `Deseja excluir a categoria <b>${nome}</b>?`;
@@ -236,6 +245,7 @@
     }
 
     function ehDespesa(nome){
+        let config = JSON.parse(localStorage.getItem('config'));
         for(let i = 0; i < config.despesa.length; i++){
             if(config.despesa[i].descricao == nome){
                 return true;
@@ -246,6 +256,7 @@
 
     function editarFixo(table, id){
         editId[table] = id;
+        let config = JSON.parse(localStorage.getItem('config'));
         
         $('#table_'+table).hide();
         $('#nome_edit_'+table).val(config[table][id].nome);
@@ -258,10 +269,12 @@
 
     function salvarFixoEditado(table){
         let nome = document.getElementById('nome_edit_'+table).value;
+        let config = JSON.parse(localStorage.getItem('config'));
         let nomeOriginal = config[table][editId[table]].nome;
+        nome = nome.trim();
         
         if(nome == ''){
-            AlertError('Preencha o campo nome');
+            AlertError('Preencha o nome da ' + table);
             return;
         }
 

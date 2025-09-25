@@ -1,9 +1,54 @@
 :root {
   --borderMedium: #f0f0f0;
+  --bg-overlay: rgba(0,0,0,.6);
+  --bg-popup: var(--card);
+  --border-color: rgba(0,0,0,.06);
+  --txt: var(--text);
+  --muted: var(--muted);
+  --btn-bg: var(--card);
+  --btn-border: rgba(0,0,0,.06);
+  --btn-bg-hover: #eef2f5;
+  --btn-border-hover: rgba(0,0,0,.12);
+  --acao-bg: linear-gradient(90deg, var(--primary), #19177a);
+  --acao-shadow: rgba(44, 42, 177,.35);
+  --bolinha: radial-gradient(circle at 30% 30%, var(--primary), #19177a);
+  --bolinha-shadow: 0 0 16px rgba(44, 42, 177,.4);
 }
 
 body.dark {
   --borderMedium: #3d3d3d;
+  --bg-overlay: rgba(0,0,0,.6);
+  --bg-popup: var(--card);
+  --border-color: rgba(255,255,255,.06);
+  --txt: var(--text);
+  --muted: var(--muted);
+  --btn-bg: var(--card);
+  --btn-border: rgba(255,255,255,.06);
+  --btn-bg-hover: #1a232e;
+  --btn-border-hover: rgb(44, 42, 177,.5);
+  --acao-bg: linear-gradient(90deg, var(--primary), #19177a);
+  --acao-shadow: rgba(44, 42, 177,.45);
+  --bolinha: radial-gradient(circle at 30% 30%, var(--primary), #19177a);
+  --bolinha-shadow: 0 0 16px rgba(44, 42, 177,.6);
+}
+
+.add, .editSave{
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  width: 30px;
+  margin: 10px;
+  height: 30px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+}
+
+.add{
+  background-color: #0fc918;
 }
 
 /* Alerts */
@@ -108,21 +153,50 @@ body.dark {
   #btnNo:hover { background: #b12f2f; }
 
   /* Table Values */
-  .tableValores{
+  .tableValores {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
-    border: 1px solid #ccc;
     margin-top: 50px;
-}
+    border: 1px solid var(--borderMedium);
+    border-radius: 8px;
+    overflow: hidden; /* garante que o radius funciona */
+    font-size: 14px;
+  }
+  
+  .tableValores th, 
+  .tableValores td {
+    padding: 12px 10px;
+  }
 
-/* icones */
-.tableValores .icon{
-    text-align: center;
-}
-
-.tableValores td, .tableValores th{
-    padding-left: 10px;
+  .tableValores tr{
+    border-bottom: 1px solid var(--borderMedium);
+  }
+  
+  .tableValores thead th {
+    background-color: #007bff;
+    color: #fff;
     text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  
+  .tableValores tbody tr {
+    border-bottom: 1px solid var(--borderMedium);
+    transition: background 0.2s ease;
+  }
+  
+  .tableValores tbody tr:last-child {
+    border-bottom: none;
+  }
+  
+  .tableValores tbody tr:hover {
+    background-color: rgba(0,0,0,0.04); /* leve destaque no hover */
+  }
+  
+
+.tableValores .icon{
+  text-align: center;
 }
 
 #voltar{
@@ -133,15 +207,57 @@ h1{
   margin: 0 30px;
 }
 
-.tableValores {
-  border-radius: 5px;
+.close-btn {
+  position: absolute; top: 12px; right: 16px;
+  font-size: 20px; cursor: pointer; border: none; background: none;
+  color: var(--text);
 }
 
-.tableValores th{
-  background-color: #007bff;
-  color: white;
+.formulario {
+display: flex;
+flex-direction: column;
+gap: 12px;
+max-width: 300px;
+margin: 0 auto;
+padding: 16px;
 }
 
-.tableValores td{
-  border-bottom: 1px solid var(--borderMedium);
+.campo {
+padding: 10px;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+font-size: 14px;
+}
+
+.grupo-check {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 14px;
+}
+
+.check {
+width: 16px;
+height: 16px;
+}
+
+.botao {
+  margin-top:6px; height:46px; border:none; border-radius:14px;
+  font-weight:600; letter-spacing:.3px;
+  cursor:pointer; transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+}
+
+.botaoAdd {
+  background:var(--acao-bg); color:white;
+  width: 100%;
+}
+
+.botaoUpd {
+  background:#19177a; color:white;
+  width: 50%;
+}
+
+.botaoDel {
+  background:#e74c3c; color:white;
+  width: 50%;
 }

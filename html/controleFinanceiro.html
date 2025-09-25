@@ -59,35 +59,400 @@
             transition: transform 0.3s ease;
             z-index: 1;
         }
+
+        .popup {
+            display: none; /* Oculto inicialmente */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0000; z-index: 10;
+            justify-content: center; align-items: center;
+        }
+        .popup_in {
+            background: var(--bg-popup); border-radius: 8px; padding: 32px 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative; min-width: 300px;
+            opacity: 0; transform: scale(0.8); transition: opacity 0.3s, transform 0.3s; z-index: 2;
+        }
+        .popup.show .popup_in {
+            opacity: 1; transform: scale(1);
+        }
+
+        .parcela {
+            width: 40px;
+        }
+
+        #saldo_atual_container{
+            display: flex; 
+            gap: 10px; 
+            align-items: center;
+            border-bottom: 1px solid var(--borderMedium);
+            margin-bottom: 10px;
+        }
+
+        #balancoMensal_container{
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--borderMedium);
+            margin-bottom: 10px;
+        }
+
+        .bm-linha{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bm-linha p {
+            margin: 2px 0;
+        }
+
+        .tab.active {
+        background: #0d6efd;
+        color: #fff;
+        }
+
+        .tabs-wrap {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        }
+
+        .tabs-wrap button{
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .hidden {
+        display: none;
+        }
+
+        .total-table {
+            font-weight: bold;
+        }
+
+        #table_provisao{
+            font-size: 12px;
+        }
+
+        .relatorio-table{
+            font-size: 12px;
+        }
     </style>
 <body>
-<div id="voltar" style="display: block;">
-    <span onclick="voltar()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 13H15q.425 0 .713-.288T16 12t-.288-.712T15 11h-3.2l.9-.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275l-2.6 2.6q-.3.3-.3.7t.3.7l2.6 2.6q.275.275.7.275t.7-.275t.275-.7t-.275-.7zm.2 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></span>
+<div style="display: flex; align-items: center; height: 50px; margin-top: -20px; border-bottom: 1px solid var(--borderMedium);">
+    <span style="margin-top: 6px" onclick="voltar()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 13H15q.425 0 .713-.288T16 12t-.288-.712T15 11h-3.2l.9-.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275l-2.6 2.6q-.3.3-.3.7t.3.7l2.6 2.6q.275.275.7.275t.7-.275t.275-.7t-.275-.7zm.2 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg></span>
+    <h1 id="menuTitle" style="font-size: 20px"></h1>
 </div>
 <!-- Loading -->
-<div id="loading" style="display: block;">
+<div id="loading" style="display: block; position: fixed; margin: 30px auto; width: 100%; z-index: 1000;">
     <div id="iconLoading"><svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="3.5" r="1.5"><animateTransform attributeName="transform" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="0 12 12;90 12 12;180 12 12;270 12 12"/><animate attributeName="opacity" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle><circle cx="12" cy="3.5" r="1.5" transform="rotate(30 12 12)"><animateTransform attributeName="transform" begin="0.2s" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="30 12 12;120 12 12;210 12 12;300 12 12"/><animate attributeName="opacity" begin="0.2s" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle><circle cx="12" cy="3.5" r="1.5" transform="rotate(60 12 12)"><animateTransform attributeName="transform" begin="0.4s" calcMode="discrete" dur="2.4s" repeatCount="indefinite" type="rotate" values="60 12 12;150 12 12;240 12 12;330 12 12"/><animate attributeName="opacity" begin="0.4s" dur="0.6s" repeatCount="indefinite" values="1;1;0"/></circle></g></svg></div>
 </div>
 
 <!-- Controle Financeiro -->
 <div id="controleFinanceiro_container" style="display: none;">
-    <div class="tela ativa" id="tela1">Tela 1</div>
-    <div class="tela" id="tela2">Tela 2</div>
-    <div class="tela" id="tela3">Tela 3</div>
-    <div class="tela" id="tela4">Tela 4</div>
+    <!-- Tela 1 - Receitas -->
+    <div class="tela ativa" id="tela1">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Receitas</h2>
+            <div class="add" id="add_receita"onclick="openPopup('popup_addReceita')">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg></span>
+            </div>
+        </div>
+
+        <!-- Saldo Atual -->
+        <div id="saldo_atual_container" onclick="openPopup('popup_editarSaldoAtual')">
+            <p>Saldo Atual:</p>
+            <b id="saldo_atual">R$0,00</b>
+        </div>
+
+        <!-- Editar Saldo Atual -->
+        <div class="popup" id="popup_editarSaldoAtual">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_editarSaldoAtual')">&#10005;</button>
+                <div class="formulario">
+                    <label for="valor_saldoAtual">Saldo Atual</label>
+                    <input type="number" id="valor_saldoAtual" placeholder="Valor" class="campo">
+                    <button onclick="alterarSaldoAtual()" class="botao botaoAdd">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Table de receitas -->
+        <div style="width: 100%; text-align: right;">
+            <b id="total_receita"></b>
+        </div>
+        <table class="tableValores" id="table_receita" style="width: 100%; margin-top: 0px; display: none;">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th style="width: 20px;"></th>
+                </tr>
+            </thead>
+            <tbody id="body_receita">
+            </tbody>
+        </table>
+
+        <!-- Popup Add Receita -->
+        <div class="popup" id="popup_addReceita">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_addReceita')">&#10005;</button>
+                <div class="formulario">
+                    <input type="text" id="descricao_receitaNovo" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_receitaNovo" placeholder="Valor" class="campo">
+                    
+                    <div class="grupo-check">
+                      <label for="recebido_receita">Marcar como Recebido</label>
+                      <input type="checkbox" id="recebido_receitaNovo" class="check">
+                    </div>
+                    
+                    <button onclick="adicionarReceita()" class="botao botaoAdd">Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Popup Del/Upd Receita -->
+        <div class="popup" id="popup_delUpdReceita">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_delUpdReceita')">&#10005;</button>
+                <div class="formulario">
+                    <input type="hidden" id="id_receita" name="id_receita">
+                    <input type="text" id="descricao_receita" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_receita" placeholder="Valor" class="campo">
+                    
+                    <div class="grupo-check">
+                      <label>Recebido</label>
+                      <input type="checkbox" id="recebido_receita" class="check">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="alterarReceita()" class="botao botaoUpd">Salvar</button>
+                        <button onclick="excluirReceita()" class="botao botaoDel">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tela 2 - Despesas -->
+    <div class="tela" id="tela2">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Despesas</h2>
+            <div class="add" id="add_despesa"onclick="openPopup('popup_addDespesa')">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg></span>
+            </div>
+        </div>
+        
+        <!-- Table de Despesas -->
+        <div style="width: 100%; text-align: right;">
+            <b id="total_despesa"></b>
+        </div>
+        <table class="tableValores" id="table_despesa" style="width: 100%; margin-top: 0px; display: none;">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th style="width: 40px;">Pago</th>
+                </tr>
+            </thead>
+            <tbody id="body_despesa">
+            </tbody>
+        </table>
+
+        <!-- Popup Add Despesa -->
+        <div class="popup" id="popup_addDespesa">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_addDespesa')">&#10005;</button>
+                <div class="formulario">
+                    <select id="categoria_despesaNovo" placeholder="Categoria" class="campo">
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+                    <input type="text" id="descricao_despesaNovo" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_despesaNovo" placeholder="Valor" class="campo">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <label for="parcelaAtual_despesaNovo">Parcela</label>
+                        <input type="text" id="parcelaAtual_despesaNovo" class="parcela" maxlength="3">
+                        <span>/</span>
+                        <input type="text" id="parcelaFinal_despesaNovo" class="parcela" maxlength="3">
+                    </div>
+                    <select id="subcategoria_despesaNovo" placeholder="Subcategoria" class="campo">
+                        <option value="">Selecione uma subcategoria</option>
+                    </select>
+
+                    <div class="grupo-check">
+                      <label for="pago_despesaNovo">Marcar como Pago</label>
+                      <input type="checkbox" id="pago_despesaNovo" class="check">
+                    </div>
+                    
+                    <button onclick="adicionarDespesa()" class="botao botaoAdd">Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Popup Del/Upd Despesa -->
+        <div class="popup" id="popup_delUpdDespesa">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_delUpdDespesa')">&#10005;</button>
+                <div class="formulario">
+                    <input type="hidden" id="id_despesa" name="id_despesa">
+                    <select id="categoria_despesa" placeholder="Categoria" class="campo">
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+                    <input type="text" id="descricao_despesa" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_despesa" placeholder="Valor" class="campo">
+                    <select id="subcategoria_despesa" placeholder="Subcategoria" class="campo">
+                        <option value="">Selecione uma subcategoria</option>
+                    </select>
+
+                    <div class="grupo-check">
+                      <label for="pago_despesa">Pago</label>
+                      <input type="checkbox" id="pago_despesa" class="check">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="alterarDespesa()" class="botao botaoUpd">Salvar</button>
+                        <button onclick="excluirDespesa()" class="botao botaoDel">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 3 - Provisões -->
+    <div class="tela" id="tela3">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Provisões</h2>
+            <div class="add" id="add_provisao"onclick="openPopup('popup_addProvisao')">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg></span>
+            </div>
+        </div>
+
+        <!-- Table de provisões -->
+        <div style="width: 100%; text-align: right;">
+            <b id="total_provisao"></b>
+        </div>
+        <table class="tableValores" id="table_provisao" style="width: 100%; margin-top: 0px; display: none;">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Gasto</th>
+                    <th>Disponível</th>
+                </tr>
+            </thead>
+            <tbody id="body_provisao">
+            </tbody>
+        </table>
+
+        <!-- Popup Add Provisão -->
+        <div class="popup" id="popup_addProvisao">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_addProvisao')">&#10005;</button>
+                <div class="formulario">
+                    <input type="text" id="descricao_provisaoNovo" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_provisaoNovo" placeholder="Valor" class="campo">
+                    
+                    <button onclick="adicionarProvisao()" class="botao botaoAdd">Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Popup Del/Upd Receita -->
+        <div class="popup" id="popup_delUpdProvisao">
+            <div class="popup_in">
+                <button class="close-btn" onclick="closePopup('popup_delUpdProvisao')">&#10005;</button>
+                <div class="formulario">
+                    <input type="hidden" id="id_provisao" name="id_provisao">
+                    <input type="text" id="descricao_provisao" placeholder="Descrição" class="campo">
+                    <input type="number" id="valor_provisao" placeholder="Valor" class="campo">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="alterarProvisao()" class="botao botaoUpd">Salvar</button>
+                        <button onclick="excluirProvisao()" class="botao botaoDel">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 4 - Relatório -->
+    <div class="tela" id="tela4">
+        <h2>Relatório</h2>
+        <div id="balancoMensal_container">
+            <div class="bm-linha">
+                <p>Saldo Atual:</p>
+                <p id="bm-saldo">R$0,00</p>
+            </div>
+            <div class="bm-linha">
+                <p>Balanço Mensal:</p>
+                <p id="bm-valor">R$0,00</p>
+            </div>
+            <div class="bm-linha" style="border-bottom: 1px solid var(--borderMedium);">
+                <b>Total:</b>
+                <b id="bm-total">R$0,00</b>
+            </div>
+        </div>
+
+        <div class="tabs-wrap" role="tablist" aria-label="Seletor de categorias" style="margin-top: 25px;">
+            <button class="tab" role="tab" aria-selected="false" data-target="categorias">Categorias</button>
+            <button class="tab" role="tab" aria-selected="false" data-target="subcategorias">Subcategorias</button>
+        </div>
+    
+        <div id="categorias" role="tabpanel">
+            <h3>Gastos por Categoria</h3>
+            <table class="tableValores relatorio-table" id="table_categorias" style="margin-top: 0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Pago</th>
+                        <th>à Pagar</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="body_categorias">
+                </tbody>
+            </table>
+        </div>
+    
+        <div id="subcategorias" class="hidden" role="tabpanel">
+            <h3>Gastos por SubCategoria</h3>
+            <table class="tableValores relatorio-table" id="table_subcategorias" style="margin-top: 0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Pago</th>
+                        <th>à Pagar</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="body_subcategorias">
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <div class="menu">
         <div class="menu-highlight"></div>
-        <div class="menu-item" data-tela="tela1">💰<br>Receitas</div>
-        <div class="menu-item" data-tela="tela2">💳<br>Dívidas</div>
-        <div class="menu-item" data-tela="tela3">⭐<br>Provisões</div>
-        <div class="menu-item" data-tela="tela4">📊<br>Relatório</div>
+        <div class="menu-item" data-tela="tela1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="M19.745 13a7 7 0 1 0-12.072-1"/><path d="M14 6c-1.105 0-2 .672-2 1.5S12.895 9 14 9s2 .672 2 1.5s-.895 1.5-2 1.5m0-6c.87 0 1.612.417 1.886 1M14 6V5m0 7c-.87 0-1.612-.417-1.886-1M14 12v1"/><path stroke-linejoin="round" d="M3 14h2.395c.294 0 .584.066.847.194l2.042.988c.263.127.553.193.848.193h1.042c1.008 0 1.826.791 1.826 1.767c0 .04-.027.074-.066.085l-2.541.703a1.95 1.95 0 0 1-1.368-.124L5.842 16.75M12 16.5l4.593-1.411a1.985 1.985 0 0 1 2.204.753c.369.51.219 1.242-.319 1.552l-7.515 4.337a2 2 0 0 1-1.568.187L3 20.02"/></g></svg>
+            <br>Receitas
+        </div>
+        <div class="menu-item" data-tela="tela2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"><path d="M2.5 17.5c0 1.886 0 2.828.586 3.414s1.528.586 3.414.586h11c1.886 0 2.828 0 3.414-.586s.586-1.528.586-3.414"/><path stroke-linecap="round" d="M10 19.5h4m2.5-14v3m-1.5-3h3c.466 0 .699 0 .883-.076a1 1 0 0 0 .54-.541c.077-.184.077-.417.077-.883s0-.699-.076-.883a1 1 0 0 0-.541-.54C18.699 2.5 18.466 2.5 18 2.5h-3c-.466 0-.699 0-.883.076a1 1 0 0 0-.54.541c-.077.184-.077.417-.077.883s0 .699.076.883a1 1 0 0 0 .541.54c.184.077.417.077.883.077"/><path d="M21.5 17.5h-19l1.304-5.868c.334-1.501.5-2.252 1.049-2.692S6.17 8.5 7.709 8.5h8.582c1.539 0 2.308 0 2.856.44c.549.44.715 1.19 1.05 2.692z"/><path stroke-linecap="round" d="M7.5 11.5H8m3.75 0h.5m3.75 0h.5m-9 3H8m3.75 0h.5m3.75 0h.5"/></g></svg>
+            <br>Despesas
+        </div>
+        <div class="menu-item" data-tela="tela3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 2v4M8 2v4m5-2h-2C7.229 4 5.343 4 4.172 5.172S3 8.229 3 12v2c0 3.771 0 5.657 1.172 6.828S7.229 22 11 22h2c3.771 0 5.657 0 6.828-1.172S21 17.771 21 14v-2c0-3.771 0-5.657-1.172-6.828S16.771 4 13 4M3 10h18m-10 4h5m-8 0h.009M13 18H8m8 0h-.009"/></svg>
+            <br>Provisões
+        </div>
+        <div class="menu-item" data-tela="tela4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M7 18v-2m5 2v-3m5 3v-5M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12"/><path d="M5.992 11.486c2.155.072 7.042-.253 9.822-4.665m-1.822-.533l1.876-.302c.228-.029.564.152.647.367l.495 1.638"/></g></svg>
+            <br>Relatório
+        </div>
     </div>
 
 </div>
 
 </body>
 <script>
+    
     // Inicia o quadro cinza à esquerda
 	document.querySelector('.menu-highlight').style.transform = `translateX(${-150}%)`
 
@@ -98,6 +463,7 @@
         document.querySelector('.menu-highlight').style.transform = `translateX(${index * 100 -150}%)`
       })
     })
+
     // verifica se existe no localStorage um controleFinanceiro
     if(!localStorage.getItem('controleFinanceiro')){
         // seta o controle financeiro como um array vazio
@@ -110,7 +476,7 @@
         localStorage.setItem('controleFinanceiro', JSON.stringify(controleFinanceiro));
     } else {
         controleFinanceiro = JSON.parse(localStorage.getItem('controleFinanceiro'));
-    }
+    }    
 
     function voltar(){
         carregarPagina('html/seletorData.html');
@@ -123,16 +489,688 @@
     }
     console.log(controleFinanceiro);
 
+    function mesPorExtenso(_mes){
+        const meses = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ]
+
+        let [ano1, mes1] = _mes.split("-")
+        mes1 = parseInt(mes1, 10) - 1
+
+        let mesExtenso = `${meses[mes1]} de ${ano1}`
+        $('#menuTitle').text(mesExtenso);
+    }
+    mesPorExtenso(mesView);
+
+    function carregarCategorias(){
+        let categorias = getCategorias();
+        $('#categoria_despesaNovo').empty();
+        $('#categoria_despesa').empty();
+        if(categorias.length > 0){
+            $('#categoria_despesaNovo').append(`<option value="">:: Categoria ::</option>`);
+            for(let i = 0; i < categorias.length; i++){
+                $('#categoria_despesaNovo').append(`<option value="${categorias[i].nome}">${categorias[i].nome}</option>`);
+            }
+            $('#categoria_despesa').append(`<option value=""></option>`);
+            for(let i = 0; i < categorias.length; i++){
+                $('#categoria_despesa').append(`<option value="${categorias[i].nome}">${categorias[i].nome}</option>`);
+            }
+        } else {
+            $('#categoria_despesaNovo').hide();
+            $('#categoria_despesa').hide();
+        }
+
+        let subcategorias = getSubcategorias();
+        $('#subcategoria_despesaNovo').empty();
+        $('#subcategoria_despesa').empty();
+        if(subcategorias.length > 0){
+            $('#subcategoria_despesaNovo').append(`<option value="">:: Subcategoria ::</option>`);
+            for(let i = 0; i < subcategorias.length; i++){
+                $('#subcategoria_despesaNovo').append(`<option value="${subcategorias[i].nome}">${subcategorias[i].nome}</option>`);
+            }
+            $('#subcategoria_despesa').append(`<option value=""></option>`);
+            for(let i = 0; i < subcategorias.length; i++){
+                $('#subcategoria_despesa').append(`<option value="${subcategorias[i].nome}">${subcategorias[i].nome}</option>`);
+            }
+        } else {
+            $('#subcategoria_despesaNovo').hide();
+            $('#subcategoria_despesa').hide();
+        }
+    }
+    carregarCategorias();
     // Fim dos comandos de inicialização
     $('#loading').hide();
     $('#controleFinanceiro_container').show();
 
-    // Funcoes de Receita
+    // Funcoes de Popup ----------------------------------------------------------------------
+    function openPopup(popupOpen) {
+      const popup = document.getElementById(popupOpen);
+      popup.style.display = 'flex';
+      setTimeout(function() {
+        popup.classList.add('show');
+      }, 10); // Pequeno delay para ativar animação
+    }
+
+    function closePopup(popupClose) {
+      const popup = document.getElementById(popupClose);
+      $(popup).removeClass('show');
+      setTimeout(function() {
+        $(popup).hide();
+      }, 300); // Espera a animação terminar para esconder
+    }
+
+
+    // Funcoes de Receita ----------------------------------------------------------------------
+    function montaTableReceita(){
+        let receitas = getReceitas(mesView);
+        valoresReceitas = { total: 0, naoRecebido: 0, recebido: 0 };
+        $('#body_receita').empty();
+        $('#table_receita').hide();
+        $('#loading').show();
+        for(let i = 0; i < receitas.length; i++){
+            let valor = formatNumber(receitas[i].valor);
+            if(!receitas[i].recebido){
+                valoresReceitas.naoRecebido = valoresReceitas.naoRecebido + Number(receitas[i].valor);
+            } else {
+                valoresReceitas.recebido = valoresReceitas.recebido + Number(receitas[i].valor);
+            }
+            valoresReceitas.total = valoresReceitas.total + Number(receitas[i].valor);
+            $('#body_receita').append(`
+                <tr onClick="exibirReceita(${receitas[i].id})">
+                    <td>${receitas[i].descricao}</td>
+                    <td>${valor}</td>
+                    <td><input type="checkbox" ${receitas[i].recebido ? 'checked' : ''} disabled></td>
+                </tr>
+            `);
+        }
+        $('#loading').hide();
+        if(receitas.length > 0){
+            $('#table_receita').show();
+        }
+        $('#total_receita').text('Total: ' + formatNumber(valoresReceitas.total));
+        montaBalancoMensal();
+    }
+    montaTableReceita();
+
+    function exibirReceita(id){
+        let receita = getReceitaById(id);
+        console.log(receita);
+        openPopup('popup_delUpdReceita');
+        $('#descricao_receita').val(receita.descricao);
+        $('#valor_receita').val(receita.valor);
+        $('#id_receita').val(receita.id);
+        $('#recebido_receita').prop('checked', receita.recebido);
+    }
+
+    function alterarReceita(){
+        let descricao = $('#descricao_receita').val();
+        let valor = $('#valor_receita').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Preencha todos os campos');
+            return;
+        }
+        let receita = {
+            id: $('#id_receita').val(),
+            descricao: descricao,
+            valor: valor,
+            recebido: $('#recebido_receita').prop('checked')
+        };
+        updReceita(receita);
+        closePopup('popup_delUpdReceita');
+        montaTableReceita();
+    }
+
+    async function excluirReceita(){
+        const response = await showConfirm('Deseja excluir esta receita?');
+        if(response){
+            let id = $('#id_receita').val()
+            delReceita(id);
+            closePopup('popup_delUpdReceita');
+            montaTableReceita();
+        }
+    }
+
+    function adicionarReceita(){
+        let descricao = $('#descricao_receitaNovo').val();
+        let valor = $('#valor_receitaNovo').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Preencha todos os campos');
+            return;
+        }
+        let receita = {
+            data: mesView,
+            id: getId('receitas'),
+            descricao: descricao,
+            valor: valor,
+            recebido: $('#recebido_receitaNovo').prop('checked'),
+            fixo: false
+        };
+        addReceita(receita);
+        closePopup('popup_addReceita');
+        $('#descricao_receitaNovo').val('');
+        $('#valor_receitaNovo').val('');
+        $('#recebido_receitaNovo').prop('checked', false);
+        montaTableReceita();
+    }
+
+    // Funcoes de Despesa ----------------------------------------------------------------------
+    function montaTableDespesa(){
+        gastosPorCategoria = [];
+        gastosPorSubcategoria = [];
+        let despesas = getDespesas(mesView);
+        $('#body_despesa').empty();
+        $('#table_despesa').hide();
+        $('#loading').show();
+        let total = 0
+        for(let i = 0; i < despesas.length; i++){
+            let valor = formatNumber(despesas[i].valor);
+            let categoria = despesas[i].categoria
+            let subcategoria = despesas[i].subcategoria
+            let valor2 = Number(despesas[i].valor)
+            let pago = despesas[i].pago
+            total += valor2
+
+            let Categoria = categoria
+            let Subcategoria = subcategoria
+            if(categoria == '' || categoria == null){
+                Categoria = 'Outros ';
+            }
+            if(subcategoria == '' || subcategoria == null){
+                Subcategoria = 'Outros ';
+            }
+
+            // alimenta o array gastosPorCategoria
+            if (!gastosPorCategoria[Categoria]) {
+                gastosPorCategoria[Categoria] = { total: 0, pago: 0, naoPago: 0 }
+            }
+
+            gastosPorCategoria[Categoria].total += valor2
+            if (pago) {
+                gastosPorCategoria[Categoria].pago += valor2
+            } else {
+                gastosPorCategoria[Categoria].naoPago += valor2
+            }
+
+            // alimenta o array gastosPorSubcategoria
+            if (!gastosPorSubcategoria[Subcategoria]) {
+                gastosPorSubcategoria[Subcategoria] = { total: 0, pago: 0, naoPago: 0 }
+            }
+
+            gastosPorSubcategoria[Subcategoria].total += valor2
+            if (pago) {
+                gastosPorSubcategoria[Subcategoria].pago += valor2
+            } else {
+                gastosPorSubcategoria[Subcategoria].naoPago += valor2
+            }
+
+            $('#body_despesa').append(`
+                <tr onClick="exibirDespesa(${despesas[i].id})">
+                    <td>
+                        <div class="linha-despesa">
+                            <div>
+                                <span class="categoria">${despesas[i].categoria}</span>
+                                <span class="subcategoria">${despesas[i].subcategoria ? ' > ' + despesas[i].subcategoria : ''}</span>
+                            </div>
+                            <div><b>${despesas[i].descricao}</b></div>
+                        </div>
+                    </td>
+                    <td>${valor}</td>
+                    <td>
+                        <div>
+                            <input type="checkbox" ${despesas[i].pago ? 'checked' : ''} disabled>
+                            <label>${despesas[i].parcela ? despesas[i].parcela + '/' + despesas[i].parcelaFinal : ''}</label>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        }
+        $('#loading').hide();
+        if(despesas.length > 0){
+            $('#table_despesa').show();
+        }
+        $('#total_despesa').text('Total: ' + formatNumber(total));
+        console.log('gastosPorCategoria: ', gastosPorCategoria);
+        console.log('gastosPorSubcategoria: ', gastosPorSubcategoria);
+        montaTableProvisao();
+    }
+    montaTableDespesa();
+
+    function exibirDespesa(id){
+        let despesa = getDespesaById(id, mesView);
+        console.log(despesa);
+        $('#categoria_despesa').val(despesa.categoria);
+        $('#subcategoria_despesa').val(despesa.subcategoria);
+        $('#descricao_despesa').val(despesa.descricao);
+        $('#valor_despesa').val(despesa.valor);
+        $('#parcelaAtual_despesa').val(despesa.parcela);
+        $('#parcelaFinal_despesa').val(despesa.parcelaFinal);
+        $('#id_despesa').val(despesa.id);
+        $('#pago_despesa').prop('checked', despesa.pago);
+        openPopup('popup_delUpdDespesa');
+    }
+
+    function alterarDespesa(){
+        let descricao = $('#descricao_despesa').val();
+        let valor = $('#valor_despesa').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Descrição e valor são obrigatórios');
+            return;
+        }
+        let despesa = {
+            id: $('#id_despesa').val(),
+            data: mesView,
+            descricao: descricao,
+            valor: valor,
+            categoria: $('#categoria_despesa').val(),
+            subcategoria: $('#subcategoria_despesa').val(),
+            pago: $('#pago_despesa').prop('checked'),
+        };
+        //se categoria ou subcategoria tiver oculto, remove o campo
+        if($('#categoria_despesa').is(':hidden')){
+            despesa.categoria = undefined;
+        }
+        if($('#subcategoria_despesa').is(':hidden')){
+            despesa.subcategoria = undefined;
+        }
+        updDespesa(despesa);
+        closePopup('popup_delUpdDespesa');
+        montaTableDespesa();
+    }
+
+    async function excluirDespesa(){
+        const response = await showConfirm('Deseja excluir esta despesa?');
+        if(response){
+            let id = $('#id_despesa').val()
+            let despesa = getDespesaById(id, mesView);
+            delDespesa(id, mesView);
+
+            let parcelaAtual = Number(despesa.parcela);
+            let parcelaFinal = Number(despesa.parcelaFinal);
+            if(parcelaAtual && parcelaFinal && (parcelaAtual < parcelaFinal)){
+                const response2 = await showConfirmYesNo('Essa é uma compra parcelada. Deseja excluir as parcelas restantes?');
+                if (response2) {
+                    let [ano, mes] = mesView.split('-').map(Number);
+
+                    for (let i = parcelaAtual + 1; i <= parcelaFinal; i++) {
+                        mes++;
+                        if (mes > 12) {
+                            mes = 1;
+                            ano++;
+                        }
+                        let mesFormatado = String(mes).padStart(2, '0');
+                        let data = `${ano}-${mesFormatado}`;
+
+                        delDespesa(id, data);
+                    }
+                }
+            }
+            closePopup('popup_delUpdDespesa');
+            montaTableDespesa();
+        }
+    }
+
+    function adicionarDespesa(){
+        let descricao = $('#descricao_despesaNovo').val();
+        let valor = $('#valor_despesaNovo').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Descrição e valor são obrigatórios');
+            return;
+        }
+        let id = getId('despesas');
+        let despesa = {
+            data: mesView,
+            id: id,
+            descricao: descricao,
+            valor: valor,
+            categoria: $('#categoria_despesaNovo').val(),
+            subcategoria: $('#subcategoria_despesaNovo').val(),
+            parcela: $('#parcelaAtual_despesaNovo').val(),
+            parcelaFinal: $('#parcelaFinal_despesaNovo').val(),
+            pago: $('#pago_despesaNovo').prop('checked'),
+        };
+        addDespesa(despesa);
+        let parcelaAtual = Number($('#parcelaAtual_despesaNovo').val());
+        let parcelaFinal = Number($('#parcelaFinal_despesaNovo').val());
+
+        if (parcelaAtual && parcelaFinal) {
+            let [ano, mes] = mesView.split('-').map(Number)
+            ano = Number(ano)
+            mes = Number(mes)
+
+            for(let i = parcelaAtual + 1; i <= parcelaFinal; i++){
+                // avança o mês
+                mes++
+                if (mes > 12) {
+                    mes = 1
+                    ano++
+                }
+                let mesFormatado = String(mes).padStart(2, '0')
+                let data = `${ano}-${mesFormatado}`
+
+                let despesa = {
+                    data: data,
+                    id: id,
+                    descricao: $('#descricao_despesaNovo').val(),
+                    valor: $('#valor_despesaNovo').val(),
+                    categoria: $('#categoria_despesaNovo').val(),
+                    subcategoria: $('#subcategoria_despesaNovo').val(),
+                    parcela: i,
+                    parcelaFinal: $('#parcelaFinal_despesaNovo').val(),
+                    pago: $('#pago_despesaNovo').prop('checked'),
+                }
+
+                addDespesa(despesa)
+            }
+        }        
+
+        closePopup('popup_addDespesa');
+        $('#descricao_despesaNovo').val('');
+        $('#valor_despesaNovo').val('');
+        $('#categoria_despesaNovo').val('');
+        $('#subcategoria_despesaNovo').val('');
+        $('#parcelaAtual_despesaNovo').val('');
+        $('#parcelaFinal_despesaNovo').val('');
+        $('#pago_despesaNovo').prop('checked', false);
+        montaTableDespesa();
+    }
+
+    // Funcoes de Provisao ----------------------------------------------------------------------
+    function montaTableProvisao(){
+        let provisoes = getProvisoes(mesView);
+        $('#body_provisao').empty();
+        $('#total_provisao').empty();
+        $('#table_provisao').hide();
+        $('#loading').show();
+        let total = 0
+        for(let i = 0; i < provisoes.length; i++){
+            let valor = Number(provisoes[i].valor)
+            let descricao = provisoes[i].descricao
+            //quanto já foi gasto dessa provisao com base no array gastosPorCategoria
+            let gasto = gastosPorCategoria[descricao] ? gastosPorCategoria[descricao].total : 0
+            let sobra = valor - gasto
+            if(sobra < 0){
+                sobra = 0
+            }
+
+            $('#body_provisao').append(`<tr onClick="exibirProvisao(${provisoes[i].id})">
+                <td><b>${descricao}</b></td>
+                <td style="opacity: 0.8;">${formatNumber(valor)}</td>
+                <td style="opacity: 0.8; color: ${gasto > valor ? 'red' : ''}">${formatNumber(gasto)}</td>
+                <td style="color: ${sobra > valor ? 'red' : ''}"><b>${formatNumber(sobra)}</b></td>
+            </tr>`);
+            total += sobra
+        }
+        $('#loading').hide();
+        if(provisoes.length > 0){
+            $('#table_provisao').show();
+        } 
+        $('#total_provisao').text('Total disponível: ' + formatNumber(total));
+        atualizarBalancoMensal();
+    }
+
+
+    function exibirProvisao(id){
+        let provisao = getProvisaoById(id);
+        $('#id_provisao').val(provisao.id);
+        $('#descricao_provisao').val(provisao.descricao);
+        $('#valor_provisao').val(provisao.valor);
+        openPopup('popup_delUpdProvisao');
+    }
+
+    function alterarProvisao(){
+        let descricao = $('#descricao_provisao').val();
+        let valor = $('#valor_provisao').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Descrição e valor são obrigatórios');
+            return;
+        }
+        let provisao = {
+            id: $('#id_provisao').val(),
+            descricao: descricao,
+            valor: valor,
+            fixo: false
+        };
+        updProvisao(provisao);
+        closePopup('popup_delUpdProvisao');
+        montaTableProvisao();
+    }
+
+    async function excluirProvisao(){
+        const response = await showConfirm('Deseja excluir esta provisão?');
+        if(response){
+            let id = $('#id_provisao').val()
+            delProvisao(id);
+            closePopup('popup_delUpdProvisao');
+            montaTableProvisao();
+        }
+    }
+
+    function adicionarProvisao(){
+        let descricao = $('#descricao_provisaoNovo').val();
+        let valor = $('#valor_provisaoNovo').val();
+        descricao = descricao.trim();
+        valor = valor.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Descrição e valor são obrigatórios');
+            return;
+        }
+        let provisao = {
+            data: mesView,
+            id: getId('provisoes'),
+            descricao: descricao,
+            valor: valor,
+            fixo: false
+        };
+        addProvisao(provisao);
+        closePopup('popup_addProvisao');
+        montaTableProvisao();
+    }
+    
+    // Funcoes de Saldo Atual ----------------------------------------------------------------------
+    function alterarSaldoAtual(){
+        let saldoAtual = $('#valor_saldoAtual').val();
+        saldoAtual = saldoAtual.trim();
+        if(saldoAtual == ''){
+            AlertError('Saldo atual é obrigatório');
+            return;
+        }
+        updSaldoAtual(saldoAtual);
+        closePopup('popup_editarSaldoAtual');
+        atualizarSaldoAtual();
+    }
+
+    function atualizarSaldoAtual(){
+        $('#saldo_atual_container').hide();
         
-    // Funcoes de Provisao
+        let saldoAtual = Number(getSaldoAtual());
+        $('#saldo_atual').text(formatNumber(saldoAtual));
+        $('#valor_saldoAtual').val(saldoAtual);
 
-    // Funcoes de Despesa
+        $('#saldo_atual_container').show();
+        montaBalancoMensal();
+    }
+    atualizarSaldoAtual();
 
-    // Funcoes de Relatório
+    //Funcoes de Balanco Mensal ----------------------------------------------------------------------
+    function atualizarBalancoMensal(){
+        montaBalancoMensal();
+        montaTableCategorias();
+        montaTableSubcategorias();
+    }
+    
+    function montaBalancoMensal(){
+        let balancoMensal = getBalancoMensal(mesView, 0);
+        let saldoAtual = Number(getSaldoAtual());
+        let total = balancoMensal + saldoAtual;
+
+        $('#bm-valor').text(formatNumber(balancoMensal));
+        $('#bm-saldo').text(formatNumber(saldoAtual));
+        $('#bm-total').text(formatNumber(total));
+    }
+
+    function montaTableCategorias() {
+        let categorias = gastosPorCategoria;
+        $('#body_categorias').empty();
+
+        let pago = 0, naoPago = 0, total = 0;
+        let outros = null;
+
+        for (let [nome, valores] of Object.entries(categorias)) {
+            if (nome === 'Outros ') {
+                outros = { nome, ...valores };
+                continue;
+            }
+            $('#body_categorias').append(`
+                <tr>
+                    <td><b>${nome}</b></td>
+                    <td style="opacity: 0.8;">${formatNumber(valores.pago)}</td>
+                    <td style="opacity: 0.8;">${formatNumber(valores.naoPago)}</td>
+                    <td><b>${formatNumber(valores.total)}</b></td>
+                </tr>
+            `);
+            pago += valores.pago;
+            naoPago += valores.naoPago;
+            total += valores.total;
+        }
+
+        if (outros) {
+            $('#body_categorias').append(`
+                <tr>
+                    <td><b>${outros.nome}</b></td>
+                    <td style="opacity: 0.8;">${formatNumber(outros.pago)}</td>
+                    <td style="opacity: 0.8;">${formatNumber(outros.naoPago)}</td>
+                    <td><b>${formatNumber(outros.total)}</b></td>
+                </tr>
+            `);
+            pago += outros.pago;
+            naoPago += outros.naoPago;
+            total += outros.total;
+        }
+
+        if (Object.keys(categorias).length === 0) {
+            $('#body_categorias').append(`<tr><td colspan="4">Nenhuma categoria encontrada</td></tr>`);
+        } else {
+            $('#body_categorias').append(`
+                <tr class="total-table">
+                    <td>Total</td>
+                    <td>${formatNumber(pago)}</td>
+                    <td>${formatNumber(naoPago)}</td>
+                    <td>${formatNumber(total)}</td>
+                </tr>
+            `);
+        }
+    }
+
+
+    function montaTableSubcategorias() {
+        const subcategorias = gastosPorSubcategoria || {};
+        console.log('subcategorias: ', subcategorias);
+        $('#body_subcategorias').empty();
+
+        let outros = null;
+        let pago = 0;
+        let naoPago = 0;
+        let total = 0;
+
+        for (const [nome, valores] of Object.entries(subcategorias)) {
+            if (!valores || typeof valores !== 'object') continue;
+
+            if (nome === 'Outros ') {
+                outros = { nome, ...valores };
+                continue;
+            }
+
+            $('#body_subcategorias').append(`
+                <tr>
+                    <td><b>${nome}</b></td>
+                    <td style="opacity: 0.8;">${formatNumber(valores.pago)}</td>
+                    <td style="opacity: 0.8;">${formatNumber(valores.naoPago)}</td>
+                    <td><b>${formatNumber(valores.total)}</b></td>
+                </tr>
+            `);
+
+            pago += Number(valores.pago) || 0;
+            naoPago += Number(valores.naoPago) || 0;
+            total += Number(valores.total) || 0;
+        }
+
+        if (outros) {
+            $('#body_subcategorias').append(`
+                <tr>
+                    <td><b>${outros.nome}</b></td>
+                    <td style="opacity: 0.8;">${formatNumber(outros.pago)}</td>
+                    <td style="opacity: 0.8;">${formatNumber(outros.naoPago)}</td>
+                    <td><b>${formatNumber(outros.total)}</b></td>
+                </tr>
+            `);
+            pago += Number(outros.pago) || 0;
+            naoPago += Number(outros.naoPago) || 0;
+            total += Number(outros.total) || 0;
+        }
+
+        if (Object.keys(subcategorias).length === 0) {
+            $('#body_subcategorias').append(`<tr><td colspan="4">Nenhuma subcategoria encontrada</td></tr>`);
+        } else {
+            $('#body_subcategorias').append(`
+                <tr class="total-table">
+                    <td>Total</td>
+                    <td>${formatNumber(pago)}</td>
+                    <td>${formatNumber(naoPago)}</td>
+                    <td>${formatNumber(total)}</td>
+                </tr>
+            `);
+        }
+    }
+
+
+    
+    tabs = Array.from(document.querySelectorAll('.tab'));
+    panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    function ativarTab(tab) {
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      panels.forEach(p => p.classList.add('hidden'));
+
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      const alvo = document.getElementById(tab.dataset.target);
+      if (alvo) alvo.classList.remove('hidden');
+      tab.focus();
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener('click', () => ativarTab(t));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          const idx = tabs.indexOf(t);
+          const proximo = e.key === 'ArrowRight'
+            ? tabs[(idx + 1) % tabs.length]
+            : tabs[(idx - 1 + tabs.length) % tabs.length];
+          ativarTab(proximo);
+        }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          ativarTab(t);
+        }
+      });
+    });
+
+    // Ativa a primeira tab por padrão
+    if (tabs.length) ativarTab(tabs[0]);
 </script>
 </html>

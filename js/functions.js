@@ -1,3 +1,22 @@
+function formatNumber(valor) {
+    return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(valor);
+}
+
+function getCategorias(){
+    let config = JSON.parse(localStorage.getItem('config'))
+    return config.categoria
+}
+
+function getSubcategorias(){
+    let config = JSON.parse(localStorage.getItem('config'))
+    return config.subcategoria
+}
+
 function mesCadastrado(mesView){
     let config = JSON.parse(localStorage.getItem('config'))
     if(config.mesesCad.includes(mesView)){

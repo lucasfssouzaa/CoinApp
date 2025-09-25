@@ -1,20 +1,27 @@
 <html lang="pt-br">
 <body>
   <h1>Configuracoes</h1>
-  <button onclick="AlertSuccess('teste')">Success</button>
-  <button onclick="AlertError('teste')">Error</button>
-  <button onclick="AlertInfo('teste')">Info</button>
-  <button onclick="abrirConfirmacao()">Abrir Confirmação</button>
+  <div style="margin-top: 20px;">
+    <label>Nome: </label><br>
+    <input type="text" id="nome" class="campo">
+    <div style="display: flex; gap: 10px; justify-content: end; margin-top: 10px;">
+      <button onclick="alterarConfiguracoes()" class="botao botaoAdd">Salvar Configurações</button>
+    </div>
+    
+  </div>
 </body>
 <script>
-  async function abrirConfirmacao(){
-      const response = await showConfirm('Tem certeza que deseja <b>prosseguir?</b>');
-      if(response){
-        console.log('Confirmação aceita');
-        // faça a ação desejada aqui
-      } else {
-        console.log('Confirmação cancelada');
-      }
+  $('#nome').val(JSON.parse(localStorage.getItem('config')).name);
+
+  function alterarConfiguracoes(){
+    let nome = $('#nome').val();
+    nome = nome.trim();
+    if(nome == ''){
+      AlertError('Preencha o nome');
+      return;
     }
+    localStorage.setItem('config', JSON.stringify({...JSON.parse(localStorage.getItem('config')), name: nome}));
+    AlertSuccess('Configurações atualizadas com sucesso');
+  }
 </script>
 </html>

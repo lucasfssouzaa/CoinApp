@@ -20,25 +20,6 @@
         margin-bottom: 10px;
     }
 
-    .add, .editSave{
-        color: white;
-        padding: 5px;
-        border-radius: 5px;
-        width: 30px;
-        margin: 10px;
-        height: 30px;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        right: 10px;
-    }
-
-    .add{
-        background-color: #0fc918;
-    }
-
     .editSave{
         background-color: #007bff;
     }
@@ -68,7 +49,6 @@
         <button class="btnGastoFixo" id="btnAdicionarGastoFixo" onClick="exibeMenu('receitaContainer')">Receitas</button>
         <button class="btnGastoFixo" id="btnEditarGastoFixo" onClick="exibeMenu('despesaContainer')">Despesas</button>
     </div>
-    <p>Gastos fixos serão atribuídos a todos os meses automaticamente, podendo ser editados ou removidos a qualquer momento</p>
 </div>
 
 <!-- Tela de Receitas -->
@@ -141,15 +121,6 @@
         config.despesa = [];
         localStorage.setItem('config', JSON.stringify(config));
     }
-
-    function formatNumber(valor) {
-        return new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(valor);
-    }
     
     // Aguardar o DOM estar pronto antes de executar montarFixo
     $(document).ready(function() {
@@ -158,6 +129,7 @@
     });
 
     function montarFixo(table){
+        let config = JSON.parse(localStorage.getItem('config'));
         $('#table_'+table).hide();
         $('#body_'+table).html('');
         if(config[table]){
@@ -185,11 +157,19 @@
 
     async function addFixo(table){
         let descricao = document.getElementById('descricao_'+table).value;
-        let valor = document.getElementById('valor_'+table).value;
+        let valor = Number(document.getElementById('valor_'+table).value);
+        descricao = descricao.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Preencha todos os campos');
+            return;
+        }
+
+        let config = JSON.parse(localStorage.getItem('config'));
 
         if(table == 'despesa'){
             criaCategoria(descricao);
         }
+        config = JSON.parse(localStorage.getItem('config'));
 
         // varre todo o config.table
         for(let i = 0; i < config[table].length; i++){
@@ -267,27 +247,39 @@
 
     
     async function removerFixo(table, id){
-      const descricao = config[table][id].descricao;
-      if(table == 'receita'){
-        msgConfirm = `Deseja excluir a receita <b>${descricao}</b>?`;
-      } else if(table == 'despesa'){
-        msgConfirm = `Deseja excluir a despesa <b>${descricao}</b>?`;
-      }
-      const response = await showConfirm(msgConfirm);
-      if(response){
-        config[table].splice(id, 1);
-        localStorage.setItem('config', JSON.stringify(config));
-        montarFixo(table);
+        let config = JSON.parse(localStorage.getItem('config'));
+        console.log('table: ', table);
+        console.log('id: ', id);
+        console.log('config: ', config);
 
-        await new Promise(resolve => setTimeout(resolve, 200));
+        const descricao = config[table][id].descricao;
+        if(table == 'receita'){
+            msgConfirm = `Deseja excluir a receita <b>${descricao}</b>?`;
+        } else if(table == 'despesa'){
+            msgConfirm = `Deseja excluir a despesa <b>${descricao}</b>?`;
+        }
+        const response = await showConfirm(msgConfirm);
+        if(response){
+            config[table].splice(id, 1);
+            localStorage.setItem('config', JSON.stringify(config));
+            montarFixo(table);
 
-        if(mesCadastrado(mesAtual)){
-            const response = await showConfirmYesNo('Deseja aplicar a mudança no mês atual?');
-            if(response){
-                if(table == 'receita'){
-                    receitasDel(descricao, true)
-                } else if(table == 'despesa'){
-                    provisaoesDel(descricao, true)
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            if(mesCadastrado(mesAtual)){
+                const response = await showConfirmYesNo('Deseja aplicar a mudança no mês atual?');
+                if(response){
+                    if(table == 'receita'){
+                        receitasDel(descricao, true)
+                    } else if(table == 'despesa'){
+                        provisaoesDel(descricao, true)
+                    }
+                } else {
+                    if(table == 'receita'){
+                        receitasDel(descricao, false)
+                    } else if(table == 'despesa'){
+                        provisaoesDel(descricao, false)
+                    }
                 }
             } else {
                 if(table == 'receita'){
@@ -296,22 +288,15 @@
                     provisaoesDel(descricao, false)
                 }
             }
-        } else {
-            if(table == 'receita'){
-                receitasDel(descricao, false)
-            } else if(table == 'despesa'){
-                provisaoesDel(descricao, false)
-            }
-        }
-        
         // faça a ação desejada aqui
-      } else {
-        console.log('Confirmação cancelada');
-      }
+        } else {
+            console.log('Confirmação cancelada');
+        }
     }
 
     function editarFixo(table, id){
         editId[table] = id;
+        let config = JSON.parse(localStorage.getItem('config'));
         $('#table_'+table).hide();
         $('#descricao_edit_'+table).val(config[table][id].descricao);
         $('#valor_edit_'+table).val(config[table][id].valor);
@@ -326,7 +311,14 @@
 
     async function salvarFixoEditado(table){
         let descricao = document.getElementById('descricao_edit_'+table).value;
-        let valor = document.getElementById('valor_edit_'+table).value;
+        let valor = Number(document.getElementById('valor_edit_'+table).value);
+        descricao = descricao.trim();
+        if(valor == '' || descricao == ''){
+            AlertError('Preencha todos os campos');
+            return;
+        }
+
+        let config = JSON.parse(localStorage.getItem('config'));
         valor = parseFloat(valor);
         valor = valor.toFixed(2);
 
@@ -404,6 +396,7 @@
 
     function criaCategoria(descricao){
         let categoriaExiste = false;
+        let config = JSON.parse(localStorage.getItem('config'));
         //varre todo o config.categoria
         for(let i = 0; i < config.categoria.length; i++){
             if(config.categoria[i].nome == descricao){
